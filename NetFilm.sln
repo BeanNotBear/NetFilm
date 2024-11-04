@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35219.272
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{444F5989-C1E0-49B7-815A-D62D650C15EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{D7574E45-DBB8-4E2B-A84C-AAC169CE51A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{0C75BAFD-8556-4E3A-84AC-4143CB99D7B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.Application", "NetFilm.Application\NetFilm.Application.csproj", "{5DC46792-50F8-4A0D-BCFF-E651C2BC1788}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.Domain", "NetFilm.Domain\NetFilm.Domain.csproj", "{41F0B10E-31A1-4201-B520-E67684F8D4E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.Infrastructure", "NetFilm.Infrastructure\NetFilm.Infrastructure.csproj", "{BBFE1F41-3BBE-45C5-A17B-050C578FA1AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.Persistence", "NetFilm.Persistence\NetFilm.Persistence.csproj", "{A2CBF375-F3E4-4C21-A1EA-C8EF00B9C3A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.API", "NetFilm.API\NetFilm.API.csproj", "{85D14777-99C4-4CDD-AC08-EF974668DB8B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5DC46792-50F8-4A0D-BCFF-E651C2BC1788}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DC46792-50F8-4A0D-BCFF-E651C2BC1788}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DC46792-50F8-4A0D-BCFF-E651C2BC1788}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DC46792-50F8-4A0D-BCFF-E651C2BC1788}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41F0B10E-31A1-4201-B520-E67684F8D4E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41F0B10E-31A1-4201-B520-E67684F8D4E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41F0B10E-31A1-4201-B520-E67684F8D4E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41F0B10E-31A1-4201-B520-E67684F8D4E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBFE1F41-3BBE-45C5-A17B-050C578FA1AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBFE1F41-3BBE-45C5-A17B-050C578FA1AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBFE1F41-3BBE-45C5-A17B-050C578FA1AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBFE1F41-3BBE-45C5-A17B-050C578FA1AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2CBF375-F3E4-4C21-A1EA-C8EF00B9C3A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2CBF375-F3E4-4C21-A1EA-C8EF00B9C3A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2CBF375-F3E4-4C21-A1EA-C8EF00B9C3A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2CBF375-F3E4-4C21-A1EA-C8EF00B9C3A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85D14777-99C4-4CDD-AC08-EF974668DB8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85D14777-99C4-4CDD-AC08-EF974668DB8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85D14777-99C4-4CDD-AC08-EF974668DB8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85D14777-99C4-4CDD-AC08-EF974668DB8B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5DC46792-50F8-4A0D-BCFF-E651C2BC1788} = {444F5989-C1E0-49B7-815A-D62D650C15EC}
+		{41F0B10E-31A1-4201-B520-E67684F8D4E4} = {444F5989-C1E0-49B7-815A-D62D650C15EC}
+		{BBFE1F41-3BBE-45C5-A17B-050C578FA1AE} = {D7574E45-DBB8-4E2B-A84C-AAC169CE51A1}
+		{A2CBF375-F3E4-4C21-A1EA-C8EF00B9C3A1} = {D7574E45-DBB8-4E2B-A84C-AAC169CE51A1}
+		{85D14777-99C4-4CDD-AC08-EF974668DB8B} = {0C75BAFD-8556-4E3A-84AC-4143CB99D7B2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E2E81432-0ADF-4368-9A04-E71FE298B5F5}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+@NetFilm.API_HostAddress = http://localhost:5042
+
+GET {{NetFilm.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
