@@ -7,7 +7,7 @@ namespace NetFilm.Application
 	{
 		public static void AddApplicationService(this IServiceCollection services, IConfiguration configuration)
 		{
-
+			
 		}
 	}
 }

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetFilm.Persistence.Data;
 
 namespace NetFilm.Persistence
 {
@@ -7,7 +9,10 @@ namespace NetFilm.Persistence
 	{
 		public static void AddPersistenceService(this IServiceCollection services, IConfiguration configuration)
 		{
-
+			services.AddDbContext<NetFilmDbContext>(options =>
+			{
+				options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+			});
 		}
 	}
 }
