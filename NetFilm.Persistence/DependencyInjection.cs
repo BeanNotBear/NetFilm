@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetFilm.Domain.Interfaces;
 using NetFilm.Persistence.Data;
+using NetFilm.Persistence.Repositories;
 
 namespace NetFilm.Persistence
 {
@@ -13,6 +15,9 @@ namespace NetFilm.Persistence
 			{
 				options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 			});
+
+			// DI for repository
+			services.AddScoped<ICountryRepository, CountryRepository>();
 		}
 	}
 }
