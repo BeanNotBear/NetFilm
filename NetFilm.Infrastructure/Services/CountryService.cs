@@ -95,7 +95,7 @@ namespace NetFilm.Infrastructure.Services
 		/// </summary>
 		/// <param name="id"> country id</param>
 		/// <returns>country dto</returns>
-		
+
 		public async Task<CountryDto> SoftDelete(Guid id)
 		{
 			var isExisted = await _countryRepository.ExistsAsync(id);
@@ -106,6 +106,29 @@ namespace NetFilm.Infrastructure.Services
 			var countryDomain = await _countryRepository.SoftDeleteAsync(id);
 			var countryDto = _mapper.Map<CountryDto>(countryDomain);
 			return countryDto;
+		}
+
+		/// <summary>
+		/// Update country
+		/// </summary>
+		/// <param name="updateCountryRequestDto"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		public async Task<CountryDto> Update(Guid id, UpdateCountryRequestDto updateCountryRequestDto)
+		{
+			var countryDomain = await _countryRepository.GetByIdAsync(id);
+			if (countryDomain == null)
+			{
+				throw new NotFoundException($"Can not found country with Id: {id}");
+			}
+			countryDomain.Name = updateCountryRequestDto.Name;
+			var updatedCountryDomain = await _countryRepository.UpdateAsync(countryDomain);
+			if (updatedCountryDomain == null)
+			{
+				throw new Exception("Some things went wrong!");
+			}
+			var updatedCountryDto = _mapper.Map<CountryDto>(updatedCountryDomain);
+			return updatedCountryDto;
 		}
 	}
 }
