@@ -6,6 +6,11 @@ using System.Linq.Expressions;
 
 namespace NetFilm.Persistence.Repositories
 {
+	/// <summary>
+	/// Base repositoy
+	/// </summary>
+	/// <typeparam name="TEntity">Data type of entity</typeparam>
+	/// <typeparam name="TId">Data type of key</typeparam>
 	public class BaseRepository<TEntity, TId> : IBaseRepository<TEntity, TId> where TEntity : class
 	{
 		private readonly NetFilmDbContext _context;
