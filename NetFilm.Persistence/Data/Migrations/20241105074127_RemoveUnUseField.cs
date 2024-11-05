@@ -6,39 +6,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NetFilm.Persistence.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class SetUpRelationShip : Migration
+    public partial class RemoveUnUseField : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Advertises",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "Datetime", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "Datetime", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Advertises", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "Datetime", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "Datetime", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,11 +41,7 @@ namespace NetFilm.Persistence.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    RoleInMovie = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "Datetime", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "Datetime", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    RoleInMovie = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,11 +106,7 @@ namespace NetFilm.Persistence.Data.Migrations
                     Release_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false),
                     TotalViews = table.Column<int>(type: "int", nullable: false),
-                    CountryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "Datetime", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "Datetime", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    CountryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -166,6 +136,28 @@ namespace NetFilm.Persistence.Data.Migrations
                         name: "FK_RoleClaims_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Advertises",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Advertises", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Advertises_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -263,19 +255,14 @@ namespace NetFilm.Persistence.Data.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "Datetime", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "Datetime", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Comments_CommentId",
-                        column: x => x.CommentId,
+                        name: "FK_Comments_Comments_ReplyId",
+                        column: x => x.ReplyId,
                         principalTable: "Comments",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -296,14 +283,12 @@ namespace NetFilm.Persistence.Data.Migrations
                 name: "MovieCategories",
                 columns: table => new
                 {
-                    Category_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Movie_Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieCategories", x => new { x.Movie_Id, x.Category_Id });
+                    table.PrimaryKey("PK_MovieCategories", x => new { x.MovieId, x.CategoryId });
                     table.ForeignKey(
                         name: "FK_MovieCategories_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -348,11 +333,7 @@ namespace NetFilm.Persistence.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "Datetime", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "Datetime", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -372,14 +353,19 @@ namespace NetFilm.Persistence.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_CommentId",
-                table: "Comments",
-                column: "CommentId");
+                name: "IX_Advertises_UserId",
+                table: "Advertises",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_MovieId",
                 table: "Comments",
                 column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_ReplyId",
+                table: "Comments",
+                column: "ReplyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_UserId",
@@ -390,11 +376,6 @@ namespace NetFilm.Persistence.Data.Migrations
                 name: "IX_MovieCategories_CategoryId",
                 table: "MovieCategories",
                 column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MovieCategories_MovieId",
-                table: "MovieCategories",
-                column: "MovieId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MovieParticipants_MovieId",
