@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace NetFilm.Persistence.Repositories
 {
 	/// <summary>
-	/// Base repositoy
+	/// Base repositoy for all sub repo
 	/// </summary>
 	/// <typeparam name="TEntity">Data type of entity</typeparam>
 	/// <typeparam name="TId">Data type of key</typeparam>
