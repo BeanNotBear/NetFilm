@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.Interfaces;
+using NetFilm.Infrastructure.Attributes;
 
 namespace NetFilm.API.Controllers
 {
@@ -38,6 +40,14 @@ namespace NetFilm.API.Controllers
 		{
 			var country = await countryService.GetById(id);
 			return Ok(country);
+		}
+
+		[HttpPost]
+		[ValidateModel]
+		public async Task<IActionResult> Add([FromBody] AddCountryRequestDto addCountryRequestDto)
+		{
+			var country = await countryService.Add(addCountryRequestDto);
+			return CreatedAtAction(nameof(GetById), new { id = country.Id }, country);
 		}
 	}
 }

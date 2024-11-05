@@ -11,5 +11,6 @@ namespace NetFilm.Application.Interfaces
 	{
         Task<IEnumerable<CountryDto>> GetAll();
 		Task<CountryDto> GetById(Guid id);
+		Task<CountryDto> Add(AddCountryRequestDto addCountryRequestDto);
     }
 }

@@ -2,6 +2,7 @@
 using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
 
 namespace NetFilm.Infrastructure.Services
@@ -18,6 +19,25 @@ namespace NetFilm.Infrastructure.Services
 		{
 			_countryRepository = countryRepository;
 			_mapper = mapper;
+		}
+
+		/// <summary>
+		/// Add country to Database
+		/// </summary>
+		/// <param name="addCountryRequestDto">Add country request</param>
+		/// <returns>created country</returns>
+		public async Task<CountryDto> Add(AddCountryRequestDto addCountryRequestDto)
+		{
+			var isExisted = await _countryRepository.ExistsByNameAsync(addCountryRequestDto.Name);
+			if (isExisted)
+			{
+				throw new ExistedEntityException($"{addCountryRequestDto.Name} is already existed!");
+			}
+			var countryDomain = _mapper.Map<Country>(addCountryRequestDto);
+
+			var createdCountryDomain = await _countryRepository.AddAsync(countryDomain);
+			var createdCountryDto = _mapper.Map<CountryDto>(createdCountryDomain);
+			return createdCountryDto;
 		}
 
 		/// <summary>
