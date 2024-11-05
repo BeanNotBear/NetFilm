@@ -21,4 +21,8 @@
     <ProjectReference Include="..\NetFilm.Persistence\NetFilm.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Middlewares\" />
+  </ItemGroup>
+
 </Project>

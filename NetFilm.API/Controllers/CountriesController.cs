@@ -15,11 +15,29 @@ namespace NetFilm.API.Controllers
 			this.countryService = countryService;
 		}
 
+		/// <summary>
+		/// Get all countries
+		/// </summary>
+		/// <returns>list of countries</returns>
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
 			var countries = await countryService.GetAll();
 			return Ok(countries);
+		}
+
+
+		/// <summary>
+		/// Get country by id 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns>country</returns>
+		[HttpGet]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> GetById([FromRoute] Guid id)
+		{
+			var country = await countryService.GetById(id);
+			return Ok(country);
 		}
 	}
 }

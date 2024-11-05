@@ -10,5 +10,6 @@ namespace NetFilm.Application.Interfaces
 	public interface ICountryService
 	{
         Task<IEnumerable<CountryDto>> GetAll();
+		Task<CountryDto> GetById(Guid id);
     }
 }
