@@ -41,6 +41,28 @@ namespace NetFilm.Infrastructure.Services
 		}
 
 		/// <summary>
+		/// Hard delete country
+		/// </summary>
+		/// <param name="id">country id</param>
+		/// <returns>boolean</returns>
+		/// <exception cref="NotFoundException">Throw when not found</exception>
+		/// <exception cref="Exception">Throw when can not delete</exception>
+		public async Task<bool> HardDelete(Guid id)
+		{
+			var isExisted = await _countryRepository.ExistsAsync(id);
+			if (!isExisted)
+			{
+				throw new NotFoundException($"Can not found country with Id: {id}");
+			}
+			var isDeleted = await _countryRepository.DeleteAsync(id);
+			if (!isDeleted)
+			{
+				throw new Exception("Some things went wrong!");
+			}
+			return true;
+		}
+
+		/// <summary>
 		/// Get all countrys
 		/// </summary>
 		/// <returns>List of countryDtos</returns>
@@ -66,6 +88,24 @@ namespace NetFilm.Infrastructure.Services
 			}
 			var countryDtos = _mapper.Map<CountryDto>(countryDomain);
 			return countryDtos;
+		}
+
+		/// <summary>
+		/// Soft delete country
+		/// </summary>
+		/// <param name="id"> country id</param>
+		/// <returns>country dto</returns>
+		
+		public async Task<CountryDto> SoftDelete(Guid id)
+		{
+			var isExisted = await _countryRepository.ExistsAsync(id);
+			if (!isExisted)
+			{
+				throw new NotFoundException($"Can not found country with Id: {id}");
+			}
+			var countryDomain = await _countryRepository.SoftDeleteAsync(id);
+			var countryDto = _mapper.Map<CountryDto>(countryDomain);
+			return countryDto;
 		}
 	}
 }

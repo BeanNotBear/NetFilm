@@ -18,5 +18,13 @@ namespace NetFilm.Persistence.Repositories
 			var country = await _context.Countries.FirstOrDefaultAsync(c => c.Name.ToLower().Trim() == name.ToLower().Trim());
 			return country != null;
 		}
+
+		public async Task<Country> SoftDeleteAsync(Guid id)
+		{
+			var entity = await _context.Countries.FindAsync(id);
+			entity.IsDelete = true;	
+			await _context.SaveChangesAsync();
+			return entity;
+		}
 	}
 }

@@ -49,5 +49,21 @@ namespace NetFilm.API.Controllers
 			var country = await countryService.Add(addCountryRequestDto);
 			return CreatedAtAction(nameof(GetById), new { id = country.Id }, country);
 		}
+
+		[HttpDelete]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> HardDelete([FromRoute] Guid id)
+		{
+			await countryService.HardDelete(id);
+			return NoContent();
+		}
+
+		[HttpPatch]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> SoftDelete([FromRoute] Guid id)
+		{
+			var country = await countryService.SoftDelete(id);
+			return Ok(country);
+		}
 	}
 }
