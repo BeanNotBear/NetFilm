@@ -1,6 +1,8 @@
-﻿namespace NetFilm.Infrastructure.Services
+﻿using NetFilm.Application.Interfaces;
+
+namespace NetFilm.Infrastructure.Services
 {
-	public class CountryService
+	public class CountryService : ICountryService
 	{
 	}
 }
