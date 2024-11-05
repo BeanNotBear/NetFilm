@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace NetFilm.Domain.Entities
 {
-	public class Country
+	public class Country : BaseEntity<Guid>
 	{
-        public Guid Id { get; set; }
         public string Name { get; set; }
     }
 }
