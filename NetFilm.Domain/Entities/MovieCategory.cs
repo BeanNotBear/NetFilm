@@ -9,8 +9,8 @@ namespace NetFilm.Domain.Entities
 {
 	public class MovieCategory
 	{
-		public Guid Category_Id { get; set; }
-		public Guid Movie_Id { get; set; }
+		public Guid CategoryId { get; set; }
+		public Guid MovieId { get; set; }
 		public Category Category { get; set; }
 		public Movie Movie { get; set; }
 	}

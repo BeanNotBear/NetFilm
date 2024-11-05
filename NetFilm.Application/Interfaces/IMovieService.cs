@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetFilm.Domain.Entities
+namespace NetFilm.Application.Interfaces
 {
-	public class Country : BaseEntity<Guid>
+	public interface IMovieService
 	{
-        public string Name { get; set; }
-    }
+	}
 }

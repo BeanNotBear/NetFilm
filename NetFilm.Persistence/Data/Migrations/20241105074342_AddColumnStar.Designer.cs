@@ -12,8 +12,8 @@ using NetFilm.Persistence.Data;
 namespace NetFilm.Persistence.Data.Migrations
 {
     [DbContext(typeof(NetFilmDbContext))]
-    [Migration("20241105055326_SetUpRelation1")]
-    partial class SetUpRelation1
+    [Migration("20241105074342_AddColumnStar")]
+    partial class AddColumnStar
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -208,17 +208,15 @@ namespace NetFilm.Persistence.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CommentId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CommentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ReplyId");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("MovieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ReplyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
@@ -305,23 +303,15 @@ namespace NetFilm.Persistence.Data.Migrations
 
             modelBuilder.Entity("NetFilm.Domain.Entities.MovieCategory", b =>
                 {
-                    b.Property<Guid>("Movie_Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("Category_Id")
+                    b.Property<Guid>("MovieId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("MovieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Movie_Id", "Category_Id");
+                    b.HasKey("MovieId", "CategoryId");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("MovieId");
 
                     b.ToTable("MovieCategories");
                 });
@@ -346,9 +336,6 @@ namespace NetFilm.Persistence.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("MyProperty")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -449,6 +436,9 @@ namespace NetFilm.Persistence.Data.Migrations
                     b.Property<Guid>("MovieId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("Star")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -527,7 +517,9 @@ namespace NetFilm.Persistence.Data.Migrations
                 {
                     b.HasOne("NetFilm.Domain.Entities.Comment", null)
                         .WithMany("Comments")
-                        .HasForeignKey("CommentId");
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("NetFilm.Domain.Entities.Movie", "Movie")
                         .WithMany()

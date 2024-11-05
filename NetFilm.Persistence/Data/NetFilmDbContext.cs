@@ -52,7 +52,7 @@ namespace NetFilm.Persistence.Data
 			// Your other entity configurations
 			modelBuilder.Entity<MovieCategory>(entity =>
 			{
-				entity.HasKey(x => new { x.Movie_Id, x.Category_Id });
+				entity.HasKey(x => new { x.MovieId, x.CategoryId });
 			});
 
 			modelBuilder.Entity<MovieParticipant>(entity =>

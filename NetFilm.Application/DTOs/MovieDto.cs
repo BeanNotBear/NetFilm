@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetFilm.Domain.Entities
+namespace NetFilm.Application.DTOs
 {
-	public class Country : BaseEntity<Guid>
+	public class MovieDto
 	{
-        public string Name { get; set; }
-    }
+	}
 }
