@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetFilm.Infrastructure.Mappers;
 
 namespace NetFilm.Infrastructure
 {
@@ -7,7 +8,10 @@ namespace NetFilm.Infrastructure
 	{
 		public static void AddInfrastructureService(this IServiceCollection services, IConfiguration configuration)
 		{
-
+			services.AddAutoMapper(options =>
+			{
+				options.AddProfile(typeof(ProfileMapper));
+			});
 		}
 	}
 }
