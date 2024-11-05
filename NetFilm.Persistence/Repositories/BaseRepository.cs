@@ -1,64 +1,114 @@
-﻿using NetFilm.Domain.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using NetFilm.Domain.Common;
 using NetFilm.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using NetFilm.Persistence.Data;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetFilm.Persistence.Repositories
 {
-	/// <summary>
-	/// Base repository
-	/// </summary>
-	/// <typeparam name="TEntity">Entity</typeparam>
-	/// <typeparam name="TId">Data type Id of entity</typeparam>
 	public class BaseRepository<TEntity, TId> : IBaseRepository<TEntity, TId> where TEntity : class
 	{
-		public Task<TEntity> AddAsync(TEntity entity)
+		private readonly NetFilmDbContext _context;
+		protected readonly DbSet<TEntity> _dbSet;
+
+		public BaseRepository(NetFilmDbContext context)
 		{
-			throw new NotImplementedException();
+			_context = context;
+			_dbSet = context.Set<TEntity>();
 		}
 
-		public Task<int> CountAsync()
+		public async Task<TEntity> AddAsync(TEntity entity)
 		{
-			throw new NotImplementedException();
+			await _dbSet.AddAsync(entity);
+			await _context.SaveChangesAsync();
+			return entity;
 		}
 
-		public Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+		public async Task<int> CountAsync()
 		{
-			throw new NotImplementedException();
+			return await _dbSet.CountAsync();
 		}
 
-		public Task<bool> DeleteAsync(TId id)
+		public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
 		{
-			throw new NotImplementedException();
+			return await _dbSet.CountAsync(predicate);
 		}
 
-		public Task<bool> ExistsAsync(TId id)
+		public async Task<bool> DeleteAsync(TId id)
 		{
-			throw new NotImplementedException();
+			var entity = await _dbSet.FindAsync(id);
+			if (entity == null)
+				return false;
+
+			_dbSet.Remove(entity);
+			await _context.SaveChangesAsync();
+			return true;
 		}
 
-		public Task<IEnumerable<TEntity>> GetAllAsync()
+		public async Task<bool> ExistsAsync(TId id)
 		{
-			throw new NotImplementedException();
+			var entity = await _dbSet.FindAsync(id);
+			return entity != null;
 		}
 
-		public Task<TEntity> GetByIdAsync(TId id)
+		public async Task<IEnumerable<TEntity>> GetAllAsync()
 		{
-			throw new NotImplementedException();
+			return await _dbSet.ToListAsync();
 		}
 
-		public Task<PagedResult<TEntity>> GetPagedResultAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IReadOnlyList<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string includes = "", int pageIndex = 1, int pageSize = 10)
+		public async Task<TEntity> GetByIdAsync(TId id)
 		{
-			throw new NotImplementedException();
+			return await _dbSet.FindAsync(id);
 		}
 
-		public Task<TEntity> UpdateAsync(TEntity entity)
+		public async Task<PagedResult<TEntity>> GetPagedResultAsync(
+			Expression<Func<TEntity, bool>>? filter = null,
+			Func<IReadOnlyList<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+			string includes = "",
+			int pageIndex = 1,
+			int pageSize = 10)
 		{
-			throw new NotImplementedException();
+			IQueryable<TEntity> query = _dbSet;
+
+			// Apply filtering
+			if (filter != null)
+			{
+				query = query.Where(filter);
+			}
+
+			// Include related entities
+			if (!string.IsNullOrWhiteSpace(includes))
+			{
+				foreach (var include in includes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+				{
+					query = query.Include(include.Trim());
+				}
+			}
+
+			// Get total count
+			var totalItems = await query.CountAsync();
+
+			// Apply ordering if specified
+			if (orderBy != null)
+			{
+				var list = await query.ToListAsync();
+				query = orderBy(list).AsQueryable();
+			}
+
+			// Apply pagination
+			var items = await query
+				.Skip((pageIndex - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+
+			return new PagedResult<TEntity>(items, totalItems, pageIndex, pageSize);
+		}
+
+		public async Task<TEntity> UpdateAsync(TEntity entity)
+		{
+			_context.Entry(entity).State = EntityState.Modified;
+			await _context.SaveChangesAsync();
+			return entity;
 		}
 	}
 }
