@@ -12,10 +12,9 @@ namespace NetFilm.Application.Interfaces
     {
         Task<IEnumerable<CategoryDto>> GetAllAsync();
         Task<CategoryDto> GetByIdAsync(Guid id);
-        Task<CategoryDto> GetByNameAsync(string name);
         Task<CategoryDto> AddAsync(ChangeCategoryDto changeCategoryDto);
         Task<CategoryDto> UpdateAsync(Guid id, ChangeCategoryDto changeCategoryDto);
-        Task<CategoryDto> DeleteAsync(Guid id);
+        Task<bool> HardDelete(Guid id);
 
     }
 }

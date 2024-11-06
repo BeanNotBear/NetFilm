@@ -9,6 +9,6 @@ namespace NetFilm.Domain.Interfaces
 {
     public interface ICategoryRepository: IBaseRepository<Category, Guid>
     {
-        Task<Category> GetByName(string name);
+        Task<bool> ExistsByNameAsync(string name);
     }
 }

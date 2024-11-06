@@ -18,9 +18,11 @@ namespace NetFilm.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<Category> GetByName(string name)
+
+        public async Task<bool> ExistsByNameAsync(string name)
         {
-            return await _context.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name.ToLower().Trim() == name.ToLower().Trim());
+            return category != null;
         }
     }
 }

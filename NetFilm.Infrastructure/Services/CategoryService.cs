@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using NetFilm.Application.DTOs.CategoryDtos;
+using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.DTOs.MovieCategoryDtos;
+using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
@@ -24,14 +26,29 @@ namespace NetFilm.Infrastructure.Services
 
         public async Task<CategoryDto> AddAsync(ChangeCategoryDto changeCategoryDto)
         {
+            var isExisted = await _categoryRepository.ExistsByNameAsync(changeCategoryDto.Name);
+            if (!isExisted) 
+            {
+                throw new ExistedEntityException($"{changeCategoryDto.Name} is already existed!");
+            }
             var category = _mapper.Map<Category>(changeCategoryDto);
             category.Id = new Guid();
             return _mapper.Map<CategoryDto>(await _categoryRepository.AddAsync(category));
         }
 
-        public Task<CategoryDto> DeleteAsync(Guid id)
+        public async Task<bool> HardDelete(Guid id)
         {
-            throw new NotImplementedException();
+            var isExisted = await _categoryRepository.ExistsAsync(id);
+            if (!isExisted)
+            {
+                throw new NotFoundException($"Can not category with Id: {id}");
+            }
+            var isDeleted = await _categoryRepository.DeleteAsync(id);
+            if (!isDeleted)
+            {
+                throw new Exception("Some things went wrong!");
+            }
+            return true;
         }
 
         public async Task<IEnumerable<CategoryDto>> GetAllAsync()
@@ -41,12 +58,12 @@ namespace NetFilm.Infrastructure.Services
 
         public async Task<CategoryDto> GetByIdAsync(Guid id)
         {
-            return _mapper.Map<CategoryDto>( await GetByIdAsync(id));
-        }
-
-        public async Task<CategoryDto> GetByNameAsync(string name)
-        {
-            return _mapper.Map<CategoryDto>(await GetByNameAsync(name));
+            var category = await _categoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                throw new NotFoundException($"Can not found category with Id {id}");
+            }
+            return _mapper.Map<CategoryDto>(category);
         }
 
         public async Task<CategoryDto> UpdateAsync(Guid id, ChangeCategoryDto changeCategoryDto)
@@ -54,10 +71,15 @@ namespace NetFilm.Infrastructure.Services
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)
             {
-                return null;
+                throw new NotFoundException($"Can not found category with Id {id}");
             }
             _mapper.Map(changeCategoryDto,category);
-            return _mapper.Map<CategoryDto>(await _categoryRepository.UpdateAsync(category));
+            var updateCategory = await _categoryRepository.UpdateAsync(category);
+            if (updateCategory == null)
+            {
+                throw new Exception("Some things went wrong!");
+            }
+            return _mapper.Map<CategoryDto>(updateCategory);
         }
     }
 }

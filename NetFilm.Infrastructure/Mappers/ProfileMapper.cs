@@ -2,7 +2,6 @@
 using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Domain.Entities;
 using NetFilm.Application.DTOs.MovieCategoryDtos;
-using NetFilm.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

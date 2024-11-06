@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.DTOs.CategoryDtos;
 using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Entities;
 
 namespace NetFilm.API.Controllers
 {
@@ -27,10 +28,6 @@ namespace NetFilm.API.Controllers
         public async Task<IActionResult> GetCategoryById(Guid id)
         {
             var category = await _categoryService.GetByIdAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
             return Ok(category);
         }
 
@@ -38,22 +35,21 @@ namespace NetFilm.API.Controllers
         public async Task<IActionResult> AddCategory(ChangeCategoryDto changeCategoryDto)
         {
             var category = await _categoryService.AddAsync(changeCategoryDto);
-            if (category == null)
-            {
-                return BadRequest();
-            }
-            return Ok(category);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(Guid id, ChangeCategoryDto changeCategoryDto)
         {
             var category = await _categoryService.UpdateAsync(id, changeCategoryDto);
-            if (category == null)
-            {
-                return BadRequest();
-            }
             return Ok(category);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> HardDelete(Guid id)
+        {
+            await _categoryService.HardDelete(id);
+            return NoContent();
         }
     }
 }

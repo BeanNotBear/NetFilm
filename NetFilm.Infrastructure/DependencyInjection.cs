@@ -17,6 +17,7 @@ namespace NetFilm.Infrastructure
 
 			// DI for service
 			services.AddScoped<ICountryService, CountryService>();
+			services.AddScoped<ICategoryService, CategoryService>();
 		}
 	}
 }
