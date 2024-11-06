@@ -19,6 +19,7 @@ namespace NetFilm.Infrastructure
 			// DI for AWS Service
 			services.AddDefaultAWSOptions(configuration.GetAWSOptions());
 			services.AddAWSService<IAmazonS3>();
+			services.AddScoped<IAWSService, AWSService>();
 
 			// DI for service
 			services.AddScoped<ICountryService, CountryService>();
