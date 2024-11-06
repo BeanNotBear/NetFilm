@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetFilm.Application.Interfaces;
 using NetFilm.Infrastructure.Mappers;
+using NetFilm.Infrastructure.Services;
 
 namespace NetFilm.Infrastructure
 {
@@ -12,6 +14,9 @@ namespace NetFilm.Infrastructure
 			{
 				options.AddProfile(typeof(ProfileMapper));
 			});
+
+			// DI for service
+			services.AddScoped<ICountryService, CountryService>();
 		}
 	}
 }

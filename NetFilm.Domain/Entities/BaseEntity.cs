@@ -16,6 +16,7 @@ namespace NetFilm.Domain.Entities
 	{
 		[Key]
 		public TId Id { get; set; }
+
         public bool IsDelete { get; set; }
     }
 }
