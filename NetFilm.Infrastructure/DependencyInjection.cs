@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Entities;
@@ -18,6 +17,13 @@ namespace NetFilm.Infrastructure
                 options.AddProfile(typeof(ProfileMapper));
             });
 
+			// DI for AWS Service
+			services.AddDefaultAWSOptions(configuration.GetAWSOptions());
+			services.AddAWSService<IAmazonS3>();
+			services.AddScoped<IAWSService, AWSService>();
+
+			// DI for service
+			services.AddScoped<ICountryService, CountryService>();
             services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = true;

@@ -17,6 +17,7 @@ builder.Services.AddDomainService(builder.Configuration);
 builder.Services.AddApplicationService(builder.Configuration);
 builder.Services.AddInfrastructureService(builder.Configuration);
 builder.Services.AddPersistenceService(builder.Configuration);
+builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 1000 * 1024 * 1024);
 
 var app = builder.Build();
 
