@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.Interfaces;
-using NetFilm.Infrastructure.Attributes;
 
 namespace NetFilm.API.Controllers
 {
