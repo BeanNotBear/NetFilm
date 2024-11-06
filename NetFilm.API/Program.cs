@@ -1,3 +1,4 @@
+using NetFilm.API.Middlewares;
 using NetFilm.Application;
 using NetFilm.Domain;
 using NetFilm.Infrastructure;
@@ -25,6 +26,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

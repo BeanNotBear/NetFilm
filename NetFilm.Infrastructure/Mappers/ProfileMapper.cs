@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using NetFilm.Application.DTOs.CountryDTOs;
+using NetFilm.Domain.Entities;
 using NetFilm.Application.DTOs.MovieCategoryDtos;
 using NetFilm.Domain.Entities;
 using System;
@@ -13,6 +15,9 @@ namespace NetFilm.Infrastructure.Mappers
 	{
 		public ProfileMapper()
 		{
+			// Mapper for country
+			CreateMap<Country, CountryDto>().ReverseMap();
+			CreateMap<AddCountryRequestDto, Country>();
 			CreateMap<Category,CategoryDto>().ReverseMap();
 		}
 	}
