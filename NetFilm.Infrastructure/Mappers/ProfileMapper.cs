@@ -18,6 +18,9 @@ namespace NetFilm.Infrastructure.Mappers
 			CreateMap<Country, CountryDto>().ReverseMap();
 			CreateMap<AddCountryRequestDto, Country>();
 			CreateMap<Category,CategoryDto>().ReverseMap();
+
+			//Mapper for User
+
 		}
 	}
 }
