@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace NetFilm.Infrastructure.Attributes
+namespace NetFilm.Application.Attributes
 {
 	public class ValidateModelAttribute : ActionFilterAttribute
 	{
