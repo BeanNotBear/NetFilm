@@ -33,11 +33,7 @@ namespace NetFilm.Infrastructure.Services
 
                 if (result.Succeeded)
                 {
-                    return new RoleDto
-                    {
-                        Id = newRole.Id,
-                        Name = newRole.Name
-                    };
+                    return mapper.Map<RoleDto>(newRole);
                 }
 
                 throw new ApplicationException("Role creation failed!");
@@ -61,11 +57,7 @@ namespace NetFilm.Infrastructure.Services
                 throw new NotFoundException($"Role with ID {id} was not found");
             }
 
-            return new RoleDto
-            {
-                Id = role.Id,
-                Name = role.Name
-            };
+            return mapper.Map<RoleDto>(role);
         }
 
         public async Task<RoleDto> Update(Guid id, UpdateRoleRequest updateRoleRequest)
@@ -93,11 +85,7 @@ namespace NetFilm.Infrastructure.Services
                 throw new InvalidOperationException("Failed to update role");
             }
 
-            return new RoleDto
-            {
-                Id = role.Id,
-                Name = role.Name
-            };
+            return mapper.Map<RoleDto>(role);
         }
     }
 }
