@@ -2,7 +2,8 @@
 {
 	public class S3ObjectDto
 	{
-		public string? Name { get; set; }
-		public string? PresignedUrl { get; set; }
+		public string Name { get; set; }
+		public string PresignedUrl { get; set; }
+		public DateTime ExpirationTime { get; set; }
 	}
 }
