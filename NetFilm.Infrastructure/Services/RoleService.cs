@@ -46,14 +46,11 @@ namespace NetFilm.Infrastructure.Services
             throw new ApplicationException($"Role {addRoleRequestDto.Name.ToUpper()} already exists");
         }
 
-        public Task<List<RoleDto>> GetAll()
+        public async Task<List<RoleDto>> GetAll()
         {
-            throw new NotImplementedException();
-        }
+            var roles = roleManager.Roles.OrderBy(x => x.Name).ToList();
 
-        public Task<PagedResult<RoleDto>> GetAllPagination()
-        {
-            throw new NotImplementedException();
+            return mapper.Map<List<RoleDto>>(roles);
         }
 
         public async Task<RoleDto> GetById(Guid id)

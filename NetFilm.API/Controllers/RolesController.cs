@@ -61,5 +61,11 @@ namespace NetFilm.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllRole()
+        {
+            return Ok(await roleService.GetAll());
+        }
     }
 }

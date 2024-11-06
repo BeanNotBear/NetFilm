@@ -12,7 +12,6 @@ namespace NetFilm.Application.Interfaces
     public interface IRoleService
     {
         Task<List<RoleDto>> GetAll();
-        Task<PagedResult<RoleDto>> GetAllPagination();
         Task<RoleDto> GetById(Guid id);
         Task<RoleDto> Add(AddRoleRequestDto addRoleRequestDto);
         Task<RoleDto> Update(Guid id, UpdateRoleRequest updateRoleRequest);

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using NetFilm.Application.DTOs.CountryDTOs;
+using NetFilm.Application.DTOs.RoleDTOs;
 using NetFilm.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,11 @@ namespace NetFilm.Infrastructure.Mappers
 			CreateMap<AddCountryRequestDto, Country>();
 
 			//Mapper for User
+			CreateMap<IdentityRole<Guid>, RoleDto>()
+			.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+			.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+			.ReverseMap();
 
-		}
+        }
 	}
 }
