@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetFilm.Application.Attributes;
 
 namespace NetFilm.Application.DTOs.UserDTOs
 {
@@ -14,9 +15,18 @@ namespace NetFilm.Application.DTOs.UserDTOs
         [Required]
         public string LastName { get; set; }
         [Required]
+        [DateOfBirthModel]
         public DateTime DateOfBirth { get; set; }
+        [Required]
         public string UserName { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
+        [Required]
+        [DataType(DataType.Password)]
+        public string PassWord { get; set; }
+        [Required]
+        [Phone]
         public string PhoneNumber { get; set; }
     }
 

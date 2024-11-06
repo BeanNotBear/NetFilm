@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
   </ItemGroup>
@@ -15,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NetFilm.Application\NetFilm.Application.csproj" />
     <ProjectReference Include="..\NetFilm.Domain\NetFilm.Domain.csproj" />
+    <ProjectReference Include="..\NetFilm.Persistence\NetFilm.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
