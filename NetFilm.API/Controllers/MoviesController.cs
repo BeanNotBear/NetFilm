@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
 
 namespace NetFilm.API.Controllers
@@ -17,10 +18,17 @@ namespace NetFilm.API.Controllers
 
 		[HttpPost]
 		[Route("Upload")]
-		public async Task<IActionResult> UploadFileAsync(IFormFile file, string bucketName, string? prefix)
+		public async Task<IActionResult> UploadVideoAsync(IFormFile file, string bucketName, string? prefix)
 		{
-			var isUploaded = await awsService.UploadFileAsync(file, bucketName, prefix);
-			return Ok(isUploaded);
+			var key = await awsService.UploadVideoAsync(file, bucketName, prefix);
+			return Ok(key);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> CreateAsync(IFormFile file, string bucketName, string? prefix)
+		{
+			var key = await awsService.UploadVideoAsync(file, bucketName, prefix);
+			return Ok(key);
 		}
 
 		[HttpGet]
@@ -31,9 +39,8 @@ namespace NetFilm.API.Controllers
 		}
 
 		[HttpGet]
-		[Route("getByKey")]
-		[ResponseCache(Duration = 3600)]
-		public async Task<IActionResult> GetByKey(string bucketName, string key)
+		[Route("watch")]
+		public async Task<IActionResult> GetMovieById(string bucketName, string key)
 		{
 			var file = await awsService.GetFileByKeyAsync(bucketName, key);
 			return Ok(file);

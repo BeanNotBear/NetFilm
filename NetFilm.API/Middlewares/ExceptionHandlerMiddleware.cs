@@ -32,7 +32,7 @@ namespace NetFilm.API.Middlewares
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 			}
-			else if (exception is ExistedEntityException)
+			else if (exception is ExistedEntityException || exception is FileNotAllowException)
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 			}

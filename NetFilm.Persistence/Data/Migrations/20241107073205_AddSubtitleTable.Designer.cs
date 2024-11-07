@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetFilm.Persistence.Data;
 
@@ -11,9 +12,11 @@ using NetFilm.Persistence.Data;
 namespace NetFilm.Persistence.Data.Migrations
 {
     [DbContext(typeof(NetFilmDbContext))]
-    partial class NetFilmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241107073205_AddSubtitleTable")]
+    partial class AddSubtitleTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -365,33 +368,6 @@ namespace NetFilm.Persistence.Data.Migrations
                     b.ToTable("Participants");
                 });
 
-            modelBuilder.Entity("NetFilm.Domain.Entities.Subtitle", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("MovieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SubtitleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SubtitleUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
-
-                    b.ToTable("Subtitles");
-                });
-
             modelBuilder.Entity("NetFilm.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -630,17 +606,6 @@ namespace NetFilm.Persistence.Data.Migrations
                     b.Navigation("Movie");
 
                     b.Navigation("Participant");
-                });
-
-            modelBuilder.Entity("NetFilm.Domain.Entities.Subtitle", b =>
-                {
-                    b.HasOne("NetFilm.Domain.Entities.Movie", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Vote", b =>
