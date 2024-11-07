@@ -28,6 +28,7 @@ namespace NetFilm.Application.DTOs.UserDTOs
         [Required]
         [Phone]
         public string PhoneNumber { get; set; }
+        public string[] Roles { get; set; }
     }
 
 }

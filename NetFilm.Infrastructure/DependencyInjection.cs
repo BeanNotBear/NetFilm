@@ -44,7 +44,7 @@ namespace NetFilm.Infrastructure
             services.AddScoped<ICountryService, CountryService>();
 
             // Injected User Service
-
+            services.AddScoped<IUserService, UserService>();
 
             // Injected Role Service
             services.AddScoped<IRoleService, RoleService>();

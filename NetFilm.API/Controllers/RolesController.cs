@@ -22,9 +22,15 @@ namespace NetFilm.API.Controllers
         [ValidateModel]
         public async Task<IActionResult> AddRole([FromBody] AddRoleRequestDto addRoleRequestDto)
         {
-            var roleDto = await roleService.Add(addRoleRequestDto);
+            try
+            {
+                var roleDto = await roleService.Add(addRoleRequestDto);
 
-            return CreatedAtAction(nameof(GetRoleById), new { id = roleDto.Id }, roleDto);
+                return CreatedAtAction(nameof(GetRoleById), new { id = roleDto.Id }, roleDto);
+            }catch (ApplicationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
