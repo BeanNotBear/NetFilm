@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.CategoryDtos;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Entities;
@@ -20,28 +21,30 @@ namespace NetFilm.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCategories() 
         {
-            var categories =  await _categoryService.GetAllAsync();
+            var categories =  await _categoryService.GetAll();
             return Ok(categories);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(Guid id)
         {
-            var category = await _categoryService.GetByIdAsync(id);
+            var category = await _categoryService.GetById(id);
             return Ok(category);
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> AddCategory(ChangeCategoryDto changeCategoryDto)
         {
-            var category = await _categoryService.AddAsync(changeCategoryDto);
+            var category = await _categoryService.Add(changeCategoryDto);
             return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
         }
 
         [HttpPut("{id}")]
+        [ValidateModel]
         public async Task<IActionResult> UpdateCategory(Guid id, ChangeCategoryDto changeCategoryDto)
         {
-            var category = await _categoryService.UpdateAsync(id, changeCategoryDto);
+            var category = await _categoryService.Update(id, changeCategoryDto);
             return Ok(category);
         }
 

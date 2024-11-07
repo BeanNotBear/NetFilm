@@ -24,10 +24,10 @@ namespace NetFilm.Infrastructure.Services
             _mapper = mapper;
         }
 
-        public async Task<CategoryDto> AddAsync(ChangeCategoryDto changeCategoryDto)
+        public async Task<CategoryDto> Add(ChangeCategoryDto changeCategoryDto)
         {
             var isExisted = await _categoryRepository.ExistsByNameAsync(changeCategoryDto.Name);
-            if (!isExisted) 
+            if (isExisted) 
             {
                 throw new ExistedEntityException($"{changeCategoryDto.Name} is already existed!");
             }
@@ -51,12 +51,12 @@ namespace NetFilm.Infrastructure.Services
             return true;
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetAllAsync()
+        public async Task<IEnumerable<CategoryDto>> GetAll()
         {
-            return _mapper.Map<IEnumerable<CategoryDto>>(await GetAllAsync());
+            return _mapper.Map<IEnumerable<CategoryDto>>(await _categoryRepository.GetAllAsync());
         }
 
-        public async Task<CategoryDto> GetByIdAsync(Guid id)
+        public async Task<CategoryDto> GetById(Guid id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)
@@ -66,7 +66,7 @@ namespace NetFilm.Infrastructure.Services
             return _mapper.Map<CategoryDto>(category);
         }
 
-        public async Task<CategoryDto> UpdateAsync(Guid id, ChangeCategoryDto changeCategoryDto)
+        public async Task<CategoryDto> Update(Guid id, ChangeCategoryDto changeCategoryDto)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)

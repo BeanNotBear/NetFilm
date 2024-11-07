@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetFilm.Application.DTOs.CategoryDtos
+namespace NetFilm.Application.DTOs.CommentDTOs
 {
-    public class ChangeCategoryDto
+    public class UpdateCommentDto
     {
         [Required]
-        public string? Name { get; set; }
+        public string Content { get; set; }
     }
 }

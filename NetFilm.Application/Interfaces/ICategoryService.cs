@@ -10,10 +10,10 @@ namespace NetFilm.Application.Interfaces
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<CategoryDto>> GetAllAsync();
-        Task<CategoryDto> GetByIdAsync(Guid id);
-        Task<CategoryDto> AddAsync(ChangeCategoryDto changeCategoryDto);
-        Task<CategoryDto> UpdateAsync(Guid id, ChangeCategoryDto changeCategoryDto);
+        Task<IEnumerable<CategoryDto>> GetAll();
+        Task<CategoryDto> GetById(Guid id);
+        Task<CategoryDto> Add(ChangeCategoryDto changeCategoryDto);
+        Task<CategoryDto> Update(Guid id, ChangeCategoryDto changeCategoryDto);
         Task<bool> HardDelete(Guid id);
 
     }

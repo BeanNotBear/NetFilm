@@ -9,5 +9,8 @@ namespace NetFilm.Domain.Interfaces
 {
 	public interface ICommentRepository : IBaseRepository<Comment, Guid>
 	{
+		Task<IEnumerable<Comment>> GetByIdMovieAsync(Guid movieId);
+        Task<IEnumerable<Comment>> GetByIdCommentAsync(Guid commentId);
+        Task<Comment> ReplyCommentAsync(Guid commentId,Comment reply);
 	}
 }
