@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Amazon.S3;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetFilm.Application.Interfaces;
 using NetFilm.Infrastructure.Mappers;
@@ -14,6 +15,11 @@ namespace NetFilm.Infrastructure
 			{
 				options.AddProfile(typeof(ProfileMapper));
 			});
+
+			// DI for AWS Service
+			services.AddDefaultAWSOptions(configuration.GetAWSOptions());
+			services.AddAWSService<IAmazonS3>();
+			services.AddScoped<IAWSService, AWSService>();
 
 			// DI for service
 			services.AddScoped<ICountryService, CountryService>();
