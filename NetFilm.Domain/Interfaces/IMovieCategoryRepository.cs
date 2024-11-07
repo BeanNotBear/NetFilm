@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetFilm.Application.Interfaces
+namespace NetFilm.Domain.Interfaces
 {
-	public interface IMovieService
-	{
-		//Task<>
-	}
+    public interface IMovieCategoryRepository
+    {
+    }
 }

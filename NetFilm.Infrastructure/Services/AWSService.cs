@@ -3,14 +3,18 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.DTOs.BucketDTOs;
+using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
+using System.Net;
 
 namespace NetFilm.Infrastructure.Services
 {
 	public class AWSService : IAWSService
 	{
 		private readonly IAmazonS3 _amazonS3;
+		private const string DISTRIBUTION_DOMAIN = "https://dqg1h1bamqrgk.cloudfront.net";
+		private const int CHUNK_DURATION_SECONDS = 15;
 
 		public AWSService(IAmazonS3 amazonS3)
 		{
@@ -177,24 +181,12 @@ namespace NetFilm.Infrastructure.Services
 					Key = key,
 					Expires = expirationTime,
 					Protocol = Protocol.HTTPS,
-					// Add response headers to force download or inline display
-					ResponseHeaderOverrides = new ResponseHeaderOverrides
-					{
-						ContentType = "video/mp4", // Adjust content type as needed
-												   // ContentDisposition = "attachment; filename=\"" + key + "\"" // Uncomment to force download
-					}
 				};
-
-				string presignedUrl = _amazonS3.GetPreSignedURL(urlRequest);
-
-				// Validate the URL was generated successfully
-				if (string.IsNullOrEmpty(presignedUrl))
-					throw new Exception("Failed to generate pre-signed URL");
 
 				return new S3ObjectDto
 				{
 					Name = key,
-					PresignedUrl = presignedUrl,
+					PresignedUrl = GetUrlCloudFront(key),
 					ExpirationTime = expirationTime
 				};
 			}
@@ -215,72 +207,6 @@ namespace NetFilm.Infrastructure.Services
 				throw new Exception($"Error retrieving file from S3: {ex.Message}", ex);
 			}
 		}
-
-		public async Task<S3ObjectDto> GetVideoByKeyAsync(string bucketName, string key)
-		{
-			try
-			{
-				if (string.IsNullOrEmpty(bucketName))
-					throw new ArgumentNullException(nameof(bucketName), "Bucket name cannot be null or empty");
-				if (string.IsNullOrEmpty(key))
-					throw new ArgumentNullException(nameof(key), "File key cannot be null or empty");
-
-				// Kiểm tra nếu bucket có tồn tại
-				var bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3, bucketName);
-				if (!bucketExists)
-					throw new NotFoundException($"Bucket '{bucketName}' not found");
-
-				// Thiết lập thời gian hết hạn (mặc định là 12 giờ, tối đa là 7 ngày)
-				var expirationTime = DateTime.UtcNow.AddHours(12);
-				var maxExpirationTime = DateTime.UtcNow.AddDays(7);
-				if (expirationTime > maxExpirationTime)
-					expirationTime = maxExpirationTime;
-
-				// Tạo presigned URL cho video với đúng content-type
-				var urlRequest = new GetPreSignedUrlRequest
-				{
-					BucketName = bucketName,
-					Key = key,
-					Expires = expirationTime,
-					Protocol = Protocol.HTTPS,
-					// Đảm bảo rằng Content-Type là video/mp4 để trình duyệt hiểu là video
-					ResponseHeaderOverrides = new ResponseHeaderOverrides
-					{
-						ContentType = "video/mp4" // Có thể thay đổi nếu định dạng khác như .avi, .mkv, .webm,...
-					}
-				};
-
-				string presignedUrl = _amazonS3.GetPreSignedURL(urlRequest);
-
-				// Kiểm tra URL đã được tạo thành công chưa
-				if (string.IsNullOrEmpty(presignedUrl))
-					throw new Exception("Failed to generate pre-signed URL");
-
-				return new S3ObjectDto
-				{
-					Name = key,
-					PresignedUrl = presignedUrl,
-					ExpirationTime = expirationTime
-				};
-			}
-			catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-			{
-				throw new NotFoundException($"File with key '{key}' not found in bucket '{bucketName}'");
-			}
-			catch (AmazonS3Exception ex) when (ex.ErrorCode == "InvalidAccessKeyId")
-			{
-				throw new Exception("Invalid AWS credentials. Please check your access key.", ex);
-			}
-			catch (AmazonS3Exception ex) when (ex.ErrorCode == "SignatureDoesNotMatch")
-			{
-				throw new Exception("Invalid AWS credentials. Please check your secret key.", ex);
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Error retrieving file from S3: {ex.Message}", ex);
-			}
-		}
-
 
 		public async Task<bool> DeleteFileAsync(string bucketName, string key)
 		{
@@ -292,6 +218,11 @@ namespace NetFilm.Infrastructure.Services
 
 			await _amazonS3.DeleteObjectAsync(bucketName, key);
 			return true;
+		}
+
+		private string GetUrlCloudFront(string key)
+		{
+			return $"{DISTRIBUTION_DOMAIN}/{key}";
 		}
 	}
 }

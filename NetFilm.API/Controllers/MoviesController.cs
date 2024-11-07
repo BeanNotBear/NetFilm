@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
 
 namespace NetFilm.API.Controllers
@@ -39,10 +40,9 @@ namespace NetFilm.API.Controllers
 
 		[HttpGet]
 		[Route("watch")]
-		[ResponseCache(Duration = 3600)]
 		public async Task<IActionResult> GetMovieById(string bucketName, string key)
 		{
-			var file = await awsService.GetVideoByKeyAsync(bucketName, key);
+			var file = await awsService.GetFileByKeyAsync(bucketName, key);
 			return Ok(file);
 		}
 

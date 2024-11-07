@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.DTOs.BucketDTOs;
+using NetFilm.Application.DTOs.MovieDTOs;
 
 namespace NetFilm.Application.Interfaces
 {
@@ -13,7 +14,6 @@ namespace NetFilm.Application.Interfaces
 		Task<string> UploadVideoAsync(IFormFile file, string bucketName, string? prefix);
 		Task<IEnumerable<S3ObjectDto>> GetAllFilesAsync(string bucketName, string? prefix);
 		Task<S3ObjectDto> GetFileByKeyAsync(string bucketName, string key);
-		Task<S3ObjectDto> GetVideoByKeyAsync(string bucketName, string key);
 		Task<bool> DeleteFileAsync(string bucketName, string key);
 	}
 }
