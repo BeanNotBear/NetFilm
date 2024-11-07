@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using NetFilm.Application.DTOs.UserDTOs;
+using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Common;
 using NetFilm.Domain.Entities;
@@ -68,22 +69,39 @@ namespace NetFilm.Infrastructure.Services
             return userDto;
         }
 
-        public Task<List<UserDto>> GetAll()
+        public async Task<List<UserDto>> GetAll()
         {
-            throw new NotImplementedException();
+            var users = userManager.Users.ToList();
+            var userDtos = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                var userDto = mapper.Map<UserDto>(user);
+                IList<string> list = await userManager.GetRolesAsync(user).ConfigureAwait(false);
+                userDto.Roles = list.ToArray();
+                userDtos.Add(userDto);
+            }
+
+            return userDtos;
         }
 
-        public Task<UserDto> GetById(Guid id)
+        public async Task<UserDto> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            var user = await userManager.FindByIdAsync(id.ToString());
+
+            if (user == null)
+            {
+                throw new NotFoundException($"User with ID {id} not found.");
+            }
+
+            var userDto = mapper.Map<UserDto>(user);
+            IList<string> list = await userManager.GetRolesAsync(user).ConfigureAwait(false);
+            userDto.Roles = list.ToArray();
+
+            return userDto;
         }
 
         public Task<PagedResult<UserDto>> GetPagedResult()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserDto> Update(UpdateUserRequestDto updateUserRequestDto)
         {
             throw new NotImplementedException();
         }

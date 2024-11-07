@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.UserDTOs;
+using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
 using NetFilm.Infrastructure.Services;
 
@@ -22,8 +23,37 @@ namespace NetFilm.API.Controllers
         [ValidateModel]
         public async Task<ActionResult<UserDto>> CreateUser(AddUserRequestDto request)
         {
-            var user = await userService.Add(request);
-            return Ok(user);
+            try
+            {
+                var userDto = await userService.Add(request);
+                return CreatedAtAction(nameof(GetUserById), new { id = userDto.Id }, userDto);
+            }catch (ArgumentNullException e)
+            {
+                return BadRequest(e.Message);
+            }catch(ApplicationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            try
+            {
+                var userDto = await userService.GetById(id);
+                return Ok(userDto);
+            }catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUser()
+        {
+            return Ok(await userService.GetAll());
         }
     }
 }
