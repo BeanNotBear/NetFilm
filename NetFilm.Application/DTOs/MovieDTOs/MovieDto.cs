@@ -16,7 +16,5 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		public int Duration { get; set; }
 		public int TotalViews { get; set; }
 		public Guid CountryId { get; set; }
-        public List<Guid> CategorieIds { get; set; }
-        public List<Guid> ParticipantIds { get; set; }
     }
 }
