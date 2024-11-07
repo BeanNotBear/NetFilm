@@ -55,5 +55,37 @@ namespace NetFilm.API.Controllers
         {
             return Ok(await userService.GetAll());
         }
+
+        [HttpPut]
+        [Route("{id:Guid}")]
+        [ValidateModel]
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] UpdateUserRequestDto updateUserRequestDto)
+        {
+            try
+            {
+                var userDto = await userService.Update(id, updateUserRequestDto);
+                return Ok(userDto);
+            }catch (NotFoundException e)
+            {
+                return BadRequest(e.Message);
+            }catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("PageResult")]
+        public async Task<IActionResult> GetUserPageResult([FromQuery] UserQueryParams userQueryParams)
+        {
+            try
+            {
+                return Ok(await userService.GetUserPagedResult(userQueryParams));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

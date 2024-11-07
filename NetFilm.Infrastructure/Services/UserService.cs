@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NetFilm.Application.DTOs.UserDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
@@ -118,14 +119,148 @@ namespace NetFilm.Infrastructure.Services
             return userDto;
         }
 
-        public Task<PagedResult<UserDto>> GetUserPagedResult()
+        public async Task<PagedResult<UserDto>> GetUserPagedResult(UserQueryParams queryParams)
         {
-            throw new NotImplementedException();
+            // Validate parameters
+            queryParams.Validate();
+
+            // Start with all users as IQueryable
+            IQueryable<User> query = userManager.Users;
+
+            // Apply search filters if searchTerm is provided
+            if (!string.IsNullOrWhiteSpace(queryParams.SearchTerm))
+            {
+                var searchTerm = queryParams.SearchTerm.Trim().ToLower();
+                query = query.Where(u =>
+                    u.FirstName.ToLower().Contains(searchTerm) ||
+                    u.LastName.ToLower().Contains(searchTerm) ||
+                    u.Email.ToLower().Contains(searchTerm) ||
+                    u.UserName.ToLower().Contains(searchTerm)
+                );
+            }
+
+            // Apply sorting
+            query = queryParams.SortBy?.ToLower() switch
+            {
+                "firstname" => queryParams.Ascending
+                    ? query.OrderBy(u => u.FirstName)
+                    : query.OrderByDescending(u => u.FirstName),
+                "lastname" => queryParams.Ascending
+                    ? query.OrderBy(u => u.LastName)
+                    : query.OrderByDescending(u => u.LastName),
+                "email" => queryParams.Ascending
+                    ? query.OrderBy(u => u.Email)
+                    : query.OrderByDescending(u => u.Email),
+                "username" => queryParams.Ascending
+                    ? query.OrderBy(u => u.UserName)
+                    : query.OrderByDescending(u => u.UserName),
+                "dateofbirth" => queryParams.Ascending
+                    ? query.OrderBy(u => u.DateOfBirth)
+                    : query.OrderByDescending(u => u.DateOfBirth),
+                _ => query.OrderBy(u => u.UserName) // default sorting
+            };
+
+            // Get total count before pagination
+            var totalItems = await query.CountAsync();
+
+            // Apply pagination
+            var users = await query
+                .Skip((queryParams.PageIndex - 1) * queryParams.PageSize)
+                .Take(queryParams.PageSize)
+                .ToListAsync();
+
+            // Get user roles and map to DTOs
+            var userDtos = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                var userDto = mapper.Map<UserDto>(user);
+                IList<string> list = await userManager.GetRolesAsync(user).ConfigureAwait(false);
+                userDto.Roles = list.ToArray();
+                userDtos.Add(userDto);
+            }
+
+            return new PagedResult<UserDto>(userDtos, totalItems, queryParams.PageIndex, queryParams.PageSize);
         }
 
-        public Task<UserDto> Update(Guid id, UpdateUserRequestDto updateUserRequestDto)
+        public async Task<UserDto> Update(Guid id, UpdateUserRequestDto updateUserRequestDto)
         {
-            throw new NotImplementedException();
+            // Find the user by id
+            var user = await userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                throw new NotFoundException($"User with ID {id} not found");
+            }
+
+            // Check if username is already taken by another user
+            var existingUserByUsername = await userManager.FindByNameAsync(updateUserRequestDto.UserName);
+            if (existingUserByUsername != null && existingUserByUsername.Id != id)
+            {
+                throw new InvalidOperationException($"Username '{updateUserRequestDto.UserName}' is already taken");
+            }
+
+            // Check if email is already taken by another user
+            var existingUserByEmail = await userManager.FindByEmailAsync(updateUserRequestDto.Email);
+            if (existingUserByEmail != null && existingUserByEmail.Id != id)
+            {
+                throw new InvalidOperationException($"Email '{updateUserRequestDto.Email}' is already registered");
+            }
+
+            // Update user properties
+            user.FirstName = updateUserRequestDto.FirstName;
+            user.LastName = updateUserRequestDto.LastName;
+            user.DateOfBirth = updateUserRequestDto.DateOfBirth;
+            user.UserName = updateUserRequestDto.UserName;
+            user.Email = updateUserRequestDto.Email;
+            user.PhoneNumber = updateUserRequestDto.PhoneNumber;
+            user.NormalizedEmail = userManager.NormalizeEmail(updateUserRequestDto.Email);
+            user.NormalizedUserName = userManager.NormalizeName(updateUserRequestDto.UserName);
+
+            // Update user in the database
+            var result = await userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to update user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+
+            // Handle role updates if provided
+            if (updateUserRequestDto.Roles != null && updateUserRequestDto.Roles.Any())
+            {
+                // Get current user roles
+                var currentRoles = await userManager.GetRolesAsync(user);
+
+                // Remove existing roles
+                if (currentRoles.Any())
+                {
+                    await userManager.RemoveFromRolesAsync(user, currentRoles);
+                }
+
+                // Validate that all requested roles exist
+                foreach (var role in updateUserRequestDto.Roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                    {
+                        throw new InvalidOperationException($"Role {role} does not exist");
+                    }
+                }
+
+                // Add new roles
+                result = await userManager.AddToRolesAsync(user, updateUserRequestDto.Roles);
+                if (!result.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        $"Failed to update user roles: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+            }
+
+            // Refresh user from database to ensure we have the latest data
+            user = await userManager.FindByIdAsync(id.ToString());
+
+            var userDto = mapper.Map<UserDto>(user);
+            userDto.Roles = (await userManager.GetRolesAsync(user)).ToArray();
+
+            return userDto;
         }
     }
 }

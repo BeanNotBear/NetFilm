@@ -21,9 +21,12 @@ namespace NetFilm.Application.DTOs.UserDTOs
         public string UserName { get; set; }
         [Required]
         [EmailAddress]
+        [CustomEmail]
         public string Email { get; set; }
         [Required]
         [Phone]
+        [PhoneNumber]
         public string PhoneNumber { get; set; }
+        public string[] Roles { get; set; }
     }
 }

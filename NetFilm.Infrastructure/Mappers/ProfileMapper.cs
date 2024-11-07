@@ -47,6 +47,23 @@ namespace NetFilm.Infrastructure.Mappers
 
             // User -> UserDto
             CreateMap<User, UserDto>().ReverseMap();
+
+            // Map from UpdateUserRequestDto to User
+            CreateMap<UpdateUserRequestDto, User>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.SecurityStamp, opt => opt.Ignore())
+                .ForMember(dest => dest.ConcurrencyStamp, opt => opt.Ignore())
+                .ForMember(dest => dest.LockoutEnd, opt => opt.Ignore())
+                .ForMember(dest => dest.LockoutEnabled, opt => opt.Ignore())
+                .ForMember(dest => dest.AccessFailedCount, opt => opt.Ignore())
+                .ForMember(dest => dest.EmailConfirmed, opt => opt.Ignore())
+                .ForMember(dest => dest.PhoneNumberConfirmed, opt => opt.Ignore())
+                .ForMember(dest => dest.TwoFactorEnabled, opt => opt.Ignore())
+                .ForMember(dest => dest.NormalizedEmail, opt => opt.Ignore())
+                .ForMember(dest => dest.NormalizedUserName, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ReverseMap();
+
         }
     }
 }
