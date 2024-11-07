@@ -21,11 +21,11 @@ namespace NetFilm.API.Controllers
 
         [HttpPost]
         [ValidateModel]
-        public async Task<ActionResult<UserDto>> CreateUser(AddUserRequestDto request)
+        public async Task<ActionResult<UserDto>> CreateUser(AddUserRequestDto addUserRequestDto)
         {
             try
             {
-                var userDto = await userService.Add(request);
+                var userDto = await userService.Add(addUserRequestDto);
                 return CreatedAtAction(nameof(GetUserById), new { id = userDto.Id }, userDto);
             }catch (ArgumentNullException e)
             {

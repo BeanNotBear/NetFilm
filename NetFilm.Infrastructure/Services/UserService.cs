@@ -17,11 +17,15 @@ namespace NetFilm.Infrastructure.Services
     {
         private readonly UserManager<User> userManager;
         private readonly IMapper mapper;
+        private readonly RoleManager<IdentityRole<Guid>> roleManager;
 
-        public UserService(UserManager<User> userManager, IMapper mapper)
+        public UserService(UserManager<User> userManager, 
+            IMapper mapper,
+            RoleManager<IdentityRole<Guid>> roleManager)
         {
             this.userManager = userManager;
             this.mapper = mapper;
+            this.roleManager = roleManager;
         }
         public async Task<UserDto> Add(AddUserRequestDto addUserRequestDto)
         {
@@ -29,6 +33,19 @@ namespace NetFilm.Infrastructure.Services
             if (addUserRequestDto == null)
             {
                 throw new ArgumentNullException(nameof(addUserRequestDto));
+            }
+
+            // Check if all specified roles exist
+            if (addUserRequestDto.Roles?.Length > 0)
+            {
+                foreach (var role in addUserRequestDto.Roles)
+                {
+                    var roleExists = await roleManager.RoleExistsAsync(role);
+                    if (!roleExists)
+                    {
+                        throw new ApplicationException($"Role '{role}' does not exist.");
+                    }
+                }
             }
 
             // Create new user instance using mapper
@@ -101,7 +118,7 @@ namespace NetFilm.Infrastructure.Services
             return userDto;
         }
 
-        public Task<PagedResult<UserDto>> GetPagedResult()
+        public Task<PagedResult<UserDto>> GetUserPagedResult()
         {
             throw new NotImplementedException();
         }

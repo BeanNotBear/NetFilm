@@ -11,7 +11,7 @@ namespace NetFilm.Application.Interfaces
     public interface IUserService
     {
         Task<List<UserDto>> GetAll();
-        Task<PagedResult<UserDto>> GetPagedResult();
+        Task<PagedResult<UserDto>> GetUserPagedResult();
         Task<UserDto> GetById(Guid id);
         Task<UserDto> Add(AddUserRequestDto addUserRequestDto);
         Task<UserDto> Update(Guid id, UpdateUserRequestDto updateUserRequestDto);
