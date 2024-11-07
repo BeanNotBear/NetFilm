@@ -262,5 +262,10 @@ namespace NetFilm.Infrastructure.Services
 
             return userDto;
         }
+
+        public Task<UserDto> UpdatePassword(Guid id, string password)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
