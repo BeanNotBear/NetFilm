@@ -36,6 +36,7 @@ namespace NetFilm.API.Controllers
 
 		[HttpPut]
 		[Route("{id:guid}/Add/Details")]
+		[ValidateModel]
 		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromBody] AddMovieRequestDto addMovieRequestDto)
 		{
 			var movie = await movieService.UpdateMovieAsync(id, addMovieRequestDto);
@@ -50,18 +51,6 @@ namespace NetFilm.API.Controllers
 			var movie = await movieService.UpdateThumbnailAsync(id, movieUrl);
 			string thumbnail = await awsService.UploadImageAsync(file, BUCKET_IMAGE, prefix);
 			return Ok(movie);
-		}
-
-		[HttpPost]
-		[Route("{id:guid}/Upload/Subtitle")]
-		public async Task<IActionResult> Test(IFormFileCollection files, string? prefix)
-		{
-			foreach (var file in files)
-			{
-				await awsService.UploadSrtAsync(file, BUCKET_SUBTITLE, prefix);
-
-			}
-			return null;
 		}
 
 		[HttpGet]

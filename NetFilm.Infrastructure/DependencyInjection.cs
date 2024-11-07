@@ -29,6 +29,9 @@ namespace NetFilm.Infrastructure
 
 			// DI for movie
 			services.AddScoped<IMovieService, MovieService>();
+
+			// DI for subtitle
+			services.AddScoped<ISubtitleService, SubtitleService>();
 		}
 	}
 }

@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
 using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.DTOs.MovieDTOs;
+using NetFilm.Application.DTOs.SubtitleDTOs;
 using NetFilm.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NetFilm.Infrastructure.Mappers
 {
@@ -23,6 +19,9 @@ namespace NetFilm.Infrastructure.Mappers
 			// Mapper for Movie
 			CreateMap<Movie, MovieDto>().ReverseMap();
 			CreateMap<AddMovieRequestDto, Movie>();
+
+			// Mapper for subtitle
+			CreateMap<Subtitle, SubtitleDto>().ReverseMap();
 		}
 	}
 }
