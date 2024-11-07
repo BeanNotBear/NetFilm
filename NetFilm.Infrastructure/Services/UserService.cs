@@ -263,9 +263,40 @@ namespace NetFilm.Infrastructure.Services
             return userDto;
         }
 
-        public Task<UserDto> UpdatePassword(Guid id, string password)
+        public async Task<UserDto> UpdatePassword(Guid id, PasswordUpdateParam passwordUpdateParam)
         {
-            throw new NotImplementedException();
+            // Find the user by id
+            var user = await userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                throw new NotFoundException("User not found.");
+            }
+
+            // Check if the new password and confirmation password match
+            if (passwordUpdateParam.NewPassword != passwordUpdateParam.ConfirmNewPassword)
+            {
+                throw new ArgumentException("The new password and confirmation password do not match.");
+            }
+
+            // Verify the old password
+            var passwordCheck = await userManager.CheckPasswordAsync(user, passwordUpdateParam.OldPassword);
+            if (!passwordCheck)
+            {
+                throw new UnauthorizedAccessException("Old password is incorrect.");
+            }
+
+            // Update the password
+            var result = await userManager.ChangePasswordAsync(user, passwordUpdateParam.OldPassword, passwordUpdateParam.NewPassword);
+            if (!result.Succeeded)
+            {
+                // Collect all error messages
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"Failed to update password: {errors}");
+            }
+
+            // Map the updated user to a UserDto
+            var userDto = mapper.Map<UserDto>(user);
+            return userDto;
         }
     }
 }

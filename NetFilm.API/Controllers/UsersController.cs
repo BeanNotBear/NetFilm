@@ -87,5 +87,29 @@ namespace NetFilm.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPatch]
+        [Route("{id:Guid}/UpdatePasswrod")]
+        public async Task<IActionResult> UpdatePassword([FromRoute] Guid id, [FromBody] PasswordUpdateParam passwordUpdateParam)
+        {
+            try
+            {
+                return Ok(await userService.UpdatePassword(id, passwordUpdateParam));
+            }
+            catch (NotFoundException e)
+            {
+                return BadRequest(e.Message);
+            }catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }catch(UnauthorizedAccessException uae)
+            {
+                return BadRequest(uae.Message);
+            }
+            catch (InvalidOperationException ioe)
+            {
+                return BadRequest(ioe.Message);
+            }
+        }
     }
 }

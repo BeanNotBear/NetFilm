@@ -15,6 +15,6 @@ namespace NetFilm.Application.Interfaces
         Task<UserDto> GetById(Guid id);
         Task<UserDto> Add(AddUserRequestDto addUserRequestDto);
         Task<UserDto> Update(Guid id, UpdateUserRequestDto updateUserRequestDto);
-        Task<UserDto> UpdatePassword(Guid id, string password);
+        Task<UserDto> UpdatePassword(Guid id, PasswordUpdateParam passwordUpdateParam);
     }
 }
