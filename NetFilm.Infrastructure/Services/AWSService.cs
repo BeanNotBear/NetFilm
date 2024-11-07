@@ -96,6 +96,17 @@ namespace NetFilm.Infrastructure.Services
 			throw new FileNotAllowException($"File with {fileExtension} is not allowed!");
 		}
 
+		public async Task<string> UploadSrtAsync(IFormFile file, string bucketName, string? prefix)
+		{
+			var fileExtension = Path.GetExtension(file.FileName);
+			if (fileExtension == ".srt")
+			{
+				string key = await UploadFileAsync(file, bucketName, prefix);
+				return key;
+			}
+			throw new FileNotAllowException($"File with {fileExtension} is not allowed!");
+		}
+
 		private async Task<string> UploadFileAsync(IFormFile file, string bucketName, string? prefix)
 		{
 			var bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3, bucketName);
@@ -105,11 +116,10 @@ namespace NetFilm.Infrastructure.Services
 			}
 
 			var fileExtension = Path.GetExtension(file.FileName);
-			var generatedFileName = $"{Guid.NewGuid()}{fileExtension}";
 
-			var key = string.IsNullOrEmpty(prefix) ? generatedFileName : $"{prefix?.TrimEnd('/')}/{generatedFileName}";
+			var key = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
 
-			var request = new PutObjectRequest()
+			var request = new PutObjectRequest
 			{
 				BucketName = bucketName,
 				Key = key,
@@ -168,26 +178,12 @@ namespace NetFilm.Infrastructure.Services
 				if (!bucketExists)
 					throw new NotFoundException($"Bucket '{bucketName}' not found");
 
-				// Calculate expiration time (default to 12 hours, max 7 days)
-				var expirationTime = DateTime.UtcNow.AddHours(12);
-				var maxExpirationTime = DateTime.UtcNow.AddDays(7);
-
-				if (expirationTime > maxExpirationTime)
-					expirationTime = maxExpirationTime;
-
-				var urlRequest = new GetPreSignedUrlRequest
-				{
-					BucketName = bucketName,
-					Key = key,
-					Expires = expirationTime,
-					Protocol = Protocol.HTTPS,
-				};
+				var s3Object = await _amazonS3.GetObjectAsync(bucketName, key);
 
 				return new S3ObjectDto
 				{
-					Name = key,
-					PresignedUrl = GetUrlCloudFront(key),
-					ExpirationTime = expirationTime
+					Name = s3Object.Key,
+					PresignedUrl = GetUrlCloudFront(s3Object.Key),
 				};
 			}
 			catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)

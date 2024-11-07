@@ -25,7 +25,10 @@ namespace NetFilm.Infrastructure
 			services.AddScoped<ICountryService, CountryService>();
 
 			// Injected User Service
-			services.AddTransient<ICountryService, CountryService>();
+			//services.AddTransient<ICountryService, CountryService>();
+
+			// DI for movie
+			services.AddScoped<IMovieService, MovieService>();
 		}
 	}
 }

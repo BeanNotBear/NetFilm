@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NetFilm.Application.Exceptions;
+using NetFilm.Application.Attributes;
+using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Application.Interfaces;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace NetFilm.API.Controllers
 {
@@ -10,25 +13,55 @@ namespace NetFilm.API.Controllers
 	public class MoviesController : ControllerBase
 	{
 		private readonly IAWSService awsService;
+		private readonly IMovieService movieService;
+		private const string BUCKET_MOVIE = "netfilm-dotnet-s3";
+		private const string BUCKET_IMAGE = "netfilm-dotnet-s3-image";
+		private const string BUCKET_SUBTITLE = "netfilm-dotnet-s3-subtitle";
 
-		public MoviesController(IAWSService awsService)
+		public MoviesController(IAWSService awsService, IMovieService movieService)
 		{
 			this.awsService = awsService;
+			this.movieService = movieService;
 		}
 
 		[HttpPost]
 		[Route("Upload")]
-		public async Task<IActionResult> UploadVideoAsync(IFormFile file, string bucketName, string? prefix)
+		public async Task<IActionResult> UploadVideoAsync(IFormFile file, string? prefix)
 		{
-			var key = await awsService.UploadVideoAsync(file, bucketName, prefix);
-			return Ok(key);
+			string movieUrl = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
+			await awsService.UploadVideoAsync(file, BUCKET_MOVIE, prefix);
+			var movie = await movieService.AddMovieAsync(file.FileName, movieUrl);
+			return Ok(movie);
+		}
+
+		[HttpPut]
+		[Route("{id:guid}/Add/Details")]
+		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromBody] AddMovieRequestDto addMovieRequestDto)
+		{
+			var movie = await movieService.UpdateMovieAsync(id, addMovieRequestDto);
+			return Ok(movie);
+		}
+
+		[HttpPatch]
+		[Route("{id:guid}/Upload/Thumbnail")]
+		public async Task<IActionResult> UploadThumbnail([FromRoute] Guid id, string? prefix, IFormFile file)
+		{
+			string movieUrl = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
+			var movie = await movieService.UpdateThumbnailAsync(id, movieUrl);
+			string thumbnail = await awsService.UploadImageAsync(file, BUCKET_IMAGE, prefix);
+			return Ok(movie);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> CreateAsync(IFormFile file, string bucketName, string? prefix)
+		[Route("{id:guid}/Upload/Subtitle")]
+		public async Task<IActionResult> Test(IFormFileCollection files, string? prefix)
 		{
-			var key = await awsService.UploadVideoAsync(file, bucketName, prefix);
-			return Ok(key);
+			foreach (var file in files)
+			{
+				await awsService.UploadSrtAsync(file, BUCKET_SUBTITLE, prefix);
+
+			}
+			return null;
 		}
 
 		[HttpGet]

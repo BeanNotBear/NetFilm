@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NetFilm.Application.DTOs.CountryDTOs;
+using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,9 @@ namespace NetFilm.Infrastructure.Mappers
 
 			//Mapper for User
 
+			// Mapper for Movie
+			CreateMap<Movie, MovieDto>().ReverseMap();
+			CreateMap<AddMovieRequestDto, Movie>();
 		}
 	}
 }

@@ -8,6 +8,7 @@ namespace NetFilm.Domain.Common
 {
 	public enum MovieStatus
 	{
+		Daft,
 		Active,
 		InActive,
 		Upcomming

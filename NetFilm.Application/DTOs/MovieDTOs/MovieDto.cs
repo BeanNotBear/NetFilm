@@ -1,4 +1,5 @@
-﻿using NetFilm.Domain.Common;
+﻿using NetFilm.Application.DTOs.CountryDTOs;
+using NetFilm.Domain.Common;
 
 namespace NetFilm.Application.DTOs.MovieDTOs
 {
@@ -15,6 +16,6 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		public DateTime Release_Date { get; set; }
 		public int Duration { get; set; }
 		public int TotalViews { get; set; }
-		public Guid CountryId { get; set; }
+		public CountryDto Country { get; set; }
     }
 }
