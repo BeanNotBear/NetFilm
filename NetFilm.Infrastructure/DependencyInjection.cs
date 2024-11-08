@@ -37,8 +37,9 @@ namespace NetFilm.Infrastructure
                 options.SignIn.RequireConfirmedAccount = false;
                 options.SignIn.RequireConfirmedEmail = false;
             })
-        .AddEntityFrameworkStores<NetFilmDbContext>()
-        .AddDefaultTokenProviders();
+                .AddTokenProvider<DataProtectorTokenProvider<User>>("NetFilm")
+                .AddEntityFrameworkStores<NetFilmDbContext>()
+                .AddDefaultTokenProviders();
 
             // DI for service
             services.AddScoped<ICountryService, CountryService>();
@@ -48,6 +49,9 @@ namespace NetFilm.Infrastructure
 
             // Injected Role Service
             services.AddScoped<IRoleService, RoleService>();
+
+            // Inject Auth Service
+            services.AddScoped<IAuthService, AuthService>();
         }
     }
 }
