@@ -30,13 +30,16 @@ namespace NetFilm.Infrastructure.Services
         /// </summary>
         /// <param name="addCountryRequestDto">Add country request</param>
         /// <returns>created country</returns>
-        public async Task<CountryDto> Add(AddVoteRequestDTO addVoteRequestDTO)
+       
+
+        public async Task<VoteDto> Add(AddVoteRequestDTO addVoteRequestDTO)
         {
             var voteDomain = _mapper.Map<Vote>(addVoteRequestDTO);
             var createdVoteDomain = await _voteRepository.AddAsync(voteDomain);
-            var createdVoteDto = _mapper.Map<CountryDto>(createdVoteDomain);
+            var createdVoteDto = _mapper.Map<VoteDto>(createdVoteDomain);
             return createdVoteDto;
         }
+
 
         /// <summary>
         /// Hard delete country
@@ -155,9 +158,5 @@ namespace NetFilm.Infrastructure.Services
             return updatedVoteDto;
         }
 
-        Task<VoteDto> IVoteService.Add(AddVoteRequestDTO addVoteRequestDTO)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

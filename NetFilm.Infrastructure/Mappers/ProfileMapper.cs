@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.DTOs.ParticipantDTOs;
+using NetFilm.Application.DTOs.VoteDtos;
 using NetFilm.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,9 @@ namespace NetFilm.Infrastructure.Mappers
 
             CreateMap<Participant, ParticipantDto>().ReverseMap();
             CreateMap<AddParticipantRequestDto, Participant>();
+
+            CreateMap<Vote, VoteDto>().ReverseMap();
+            CreateMap<AddVoteRequestDTO, Vote>();
 
         }
 	}
