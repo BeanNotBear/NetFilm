@@ -1,4 +1,10 @@
-﻿using NetFilm.Application.Interfaces;
+﻿using AutoMapper;
+using NetFilm.Application.DTOs.MovieDTOs;
+using NetFilm.Application.Exceptions;
+using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Common;
+using NetFilm.Domain.Entities;
+using NetFilm.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +15,62 @@ namespace NetFilm.Infrastructure.Services
 {
 	public class MovieService : IMovieService
 	{
+		private readonly IMovieRepository _movieRepository;
+		private readonly IMapper _mapper;
+
+		public MovieService(IMovieRepository movieRepository, IMapper mapper)
+		{
+			_movieRepository = movieRepository;
+			_mapper = mapper;
+		}
+
+		public async Task<MovieDto> AddMovieAsync(string movieName, string movieUrl)
+		{
+			var movieDomain = new Movie()
+			{
+				Name = movieName,
+				Movie_Url = movieUrl,
+				Status = MovieStatus.Daft,
+				Allowing_Age = 0,
+				Average_Star = 0,
+				CountryId = Guid.Parse("fe68d192-8239-4a1c-b0d7-601552e7891a"),
+				Description = string.Empty,
+				Duration = 0,
+				Quality = Quality.FullHD,
+				Thumbnail = string.Empty,
+				Release_Date = DateTime.Now,
+				IsDelete = false,
+				TotalViews = 0,
+			};
+			var createdMovieDomain = await _movieRepository.AddAsync(movieDomain);
+			var createdMovieDto = _mapper.Map<MovieDto>(createdMovieDomain);
+			return createdMovieDto;
+		}
+
+		public async Task<MovieDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto)
+		{
+			await IsExsited(id);
+			var movieDomain = _mapper.Map<Movie>(addMovieRequestDto);
+			var updatedMovieDomain = await _movieRepository.UpdateDetails(id, movieDomain);
+			var updatedMovieDto = _mapper.Map<MovieDto>(updatedMovieDomain);
+			return updatedMovieDto;
+		}
+
+		public async Task<MovieDto> UpdateThumbnailAsync(Guid id, string thumbnail)
+		{
+			await IsExsited(id);
+			var updatedMovieDomain = await _movieRepository.UpddateThumbnail(id, thumbnail);
+			var updatedMovieDto = _mapper.Map<MovieDto>(updatedMovieDomain);
+			return updatedMovieDto;
+		}
+
+		private async Task IsExsited(Guid id)
+		{
+			var isExisted = await _movieRepository.ExistsAsync(id);
+			if (!isExisted)
+			{
+				throw new ExistedEntityException($"Movie with id {id} is already existed!");
+			}
+		}
 	}
 }
