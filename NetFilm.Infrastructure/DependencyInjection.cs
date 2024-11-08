@@ -2,8 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Interfaces;
 using NetFilm.Infrastructure.Mappers;
 using NetFilm.Infrastructure.Services;
+using NetFilm.Persistence.Repositories;
+
 
 namespace NetFilm.Infrastructure
 {
@@ -21,11 +24,16 @@ namespace NetFilm.Infrastructure
 			services.AddAWSService<IAmazonS3>();
 			services.AddScoped<IAWSService, AWSService>();
 
-			// DI for service
-			services.AddScoped<ICountryService, CountryService>();
+            // DI for service
+            services.AddTransient<ICountryService, CountryService>();
 
-			// Injected User Service
-			services.AddTransient<ICountryService, CountryService>();
-		}
-	}
+
+            
+            services.AddTransient<IParticipantService, ParticipantService>();
+            services.AddTransient<IParticipantRepository, ParticipantRepository>();
+
+            services.AddTransient<IVoteService, VoteService>();
+            services.AddTransient<IVoteRepository, VoteRepository>();
+        }
+    }
 }

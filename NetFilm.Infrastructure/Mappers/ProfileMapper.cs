@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NetFilm.Application.DTOs.CountryDTOs;
+using NetFilm.Application.DTOs.ParticipantDTOs;
 using NetFilm.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,11 @@ namespace NetFilm.Infrastructure.Mappers
 		{
 			// Mapper for country
 			CreateMap<Country, CountryDto>().ReverseMap();
-			CreateMap<AddCountryRequestDto, Country>();
+            CreateMap<AddCountryRequestDto, Country>();
 
-			//Mapper for User
+            CreateMap<Participant, ParticipantDto>().ReverseMap();
+            CreateMap<AddParticipantRequestDto, Participant>();
 
-		}
+        }
 	}
 }

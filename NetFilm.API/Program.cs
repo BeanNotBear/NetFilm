@@ -1,8 +1,12 @@
 using NetFilm.API.Middlewares;
 using NetFilm.Application;
+using NetFilm.Application.Interfaces;
 using NetFilm.Domain;
+using NetFilm.Domain.Interfaces;
 using NetFilm.Infrastructure;
+using NetFilm.Infrastructure.Services;
 using NetFilm.Persistence;
+using NetFilm.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,9 @@ builder.Services.AddApplicationService(builder.Configuration);
 builder.Services.AddInfrastructureService(builder.Configuration);
 builder.Services.AddPersistenceService(builder.Configuration);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 1000 * 1024 * 1024);
+// Ðãng k? repository
+
+
 
 var app = builder.Build();
 

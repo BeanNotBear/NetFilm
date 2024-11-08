@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NetFilm.Application\NetFilm.Application.csproj" />
     <ProjectReference Include="..\NetFilm.Domain\NetFilm.Domain.csproj" />
+    <ProjectReference Include="..\NetFilm.Persistence\NetFilm.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
