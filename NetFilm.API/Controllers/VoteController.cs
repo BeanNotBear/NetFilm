@@ -25,8 +25,8 @@ namespace NetFilm.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var countries = await voteService.GetAll();
-            return Ok(countries);
+            var vote = await voteService.GetAll();
+            return Ok(vote);
         }
 
 
@@ -39,8 +39,8 @@ namespace NetFilm.API.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var country = await voteService.GetById(id);
-            return Ok(country);
+            var vote = await voteService.GetById(id);
+            return Ok(vote);
         }
 
         /// <summary>
@@ -78,8 +78,8 @@ namespace NetFilm.API.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> SoftDelete([FromRoute] Guid id)
         {
-            var country = await voteService.SoftDelete(id);
-            return Ok(country);
+            var vote = await voteService.SoftDelete(id);
+            return Ok(vote);
         }
 
         /// <summary>

@@ -140,6 +140,7 @@ namespace NetFilm.Infrastructure.Services
                 throw new NotFoundException($"Cannot find participant with Id: {id}");
             }
             participantDomain.Name = updateParticipantRequestDto.Name;
+            participantDomain.RoleInMovie = updateParticipantRequestDto.RoleInMovie;
 
             var updatedParticipantDomain = await _participantRepository.UpdateAsync(participantDomain);
             if (updatedParticipantDomain == null)

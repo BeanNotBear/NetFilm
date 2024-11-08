@@ -148,7 +148,7 @@ namespace NetFilm.Infrastructure.Services
             {
                 throw new NotFoundException($"Cannot find vote with Id: {id}");
             }
-
+            voteDomain.Star = updateVoteRequestDto.Star;
             var updatedVoteDomain = await _voteRepository.UpdateAsync(voteDomain);
             if (updatedVoteDomain == null)
             {
