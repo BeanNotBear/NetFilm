@@ -37,7 +37,7 @@ namespace NetFilm.API.Controllers
 		[HttpPut]
 		[Route("{id:guid}/Add/Details")]
 		[ValidateModel]
-		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromBody] AddMovieRequestDto addMovieRequestDto, string? prefix)
+		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromForm] AddMovieRequestDto addMovieRequestDto, string? prefix)
 		{
 			var movie = await movieService.UpdateMovieAsync(id, addMovieRequestDto);
 			string fileName = addMovieRequestDto.File.FileName;

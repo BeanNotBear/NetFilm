@@ -14,7 +14,6 @@ namespace NetFilm.Infrastructure.Services
 	{
 		private readonly IAmazonS3 _amazonS3;
 		private const string DISTRIBUTION_DOMAIN = "https://dqg1h1bamqrgk.cloudfront.net";
-		private const int CHUNK_DURATION_SECONDS = 15;
 
 		public AWSService(IAmazonS3 amazonS3)
 		{
@@ -157,7 +156,7 @@ namespace NetFilm.Infrastructure.Services
 				return new S3ObjectDto()
 				{
 					Name = s.Key.ToString(),
-					PresignedUrl = _amazonS3.GetPreSignedURL(urlRequest),
+					PresignedUrl = GetUrlCloudFront(s.Key)
 				};
 			});
 			return s3Objects;

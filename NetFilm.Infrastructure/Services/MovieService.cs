@@ -51,6 +51,12 @@ namespace NetFilm.Infrastructure.Services
 		{
 			await IsExsited(id);
 			var movieDomain = _mapper.Map<Movie>(addMovieRequestDto);
+			List<MovieCategory> movieCate = new List<MovieCategory>();
+			foreach (var category in addMovieRequestDto.CategoryIds)
+			{
+				movieCate.Add(new MovieCategory { CategoryId = category, MovieId = id });
+			}
+			movieDomain.MovieCategories = movieCate;
 			var updatedMovieDomain = await _movieRepository.UpdateDetails(id, movieDomain);
 			var updatedMovieDto = _mapper.Map<MovieDto>(updatedMovieDomain);
 			return updatedMovieDto;

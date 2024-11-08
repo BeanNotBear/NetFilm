@@ -39,6 +39,7 @@ namespace NetFilm.Persistence.Repositories
 			existedMovie.Release_Date = movie.Release_Date;
 			existedMovie.Duration = movie.Duration;
 			existedMovie.CountryId = movie.CountryId;
+			existedMovie.MovieCategories = movie.MovieCategories;
 			await _dbContext.SaveChangesAsync();
 			return existedMovie;	
 		}
