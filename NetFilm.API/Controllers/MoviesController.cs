@@ -17,6 +17,7 @@ namespace NetFilm.API.Controllers
 		private const string BUCKET_MOVIE = "netfilm-dotnet-s3";
 		private const string BUCKET_IMAGE = "netfilm-dotnet-s3-image";
 		private const string BUCKET_SUBTITLE = "netfilm-dotnet-s3-subtitle";
+		private const string DISTRIBUTION_DOMAIN = "https://dqg1h1bamqrgk.cloudfront.net";
 
 		public MoviesController(IAWSService awsService, IMovieService movieService)
 		{
@@ -31,7 +32,7 @@ namespace NetFilm.API.Controllers
 			string movieUrl = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
 			await awsService.UploadVideoAsync(file, BUCKET_MOVIE, prefix);
 			var movie = await movieService.AddMovieAsync(file.FileName, movieUrl);
-			return Ok(movie);
+			return CreatedAtAction(nameof(GetById), new { id = movie.Id }, movie);
 		}
 
 		[HttpPut]
@@ -48,10 +49,18 @@ namespace NetFilm.API.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetAllFile(string bucketName, string? prefix)
+		public async Task<IActionResult> GetAllFile()
 		{
-			var files = await awsService.GetAllFilesAsync(bucketName, prefix);
-			return Ok(files);
+			var movies = await movieService.GetAllAsync();
+			return Ok(movies);
+		}
+
+		[HttpGet]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> GetById([FromRoute] Guid id)
+		{
+			var movie = await movieService.GetByIdAsync(id);
+			return Ok(movie);
 		}
 
 		[HttpGet]

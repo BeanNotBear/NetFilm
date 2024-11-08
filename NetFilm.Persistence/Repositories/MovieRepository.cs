@@ -32,7 +32,7 @@ namespace NetFilm.Persistence.Repositories
 		public async Task<Movie> UpdateDetails(Guid id, Movie movie)
 		{
 			var existedMovie = await _dbContext.Movies.FindAsync(id);
-			existedMovie.Name = movie.Name;	
+			existedMovie.Name = movie.Name;
 			existedMovie.Description = movie.Description;
 			existedMovie.Quality = movie.Quality;
 			existedMovie.Allowing_Age = movie.Allowing_Age;
@@ -40,8 +40,9 @@ namespace NetFilm.Persistence.Repositories
 			existedMovie.Duration = movie.Duration;
 			existedMovie.CountryId = movie.CountryId;
 			existedMovie.MovieCategories = movie.MovieCategories;
+			existedMovie.Status = Domain.Common.MovieStatus.Active;
 			await _dbContext.SaveChangesAsync();
-			return existedMovie;	
+			return existedMovie;
 		}
 
 		public async Task<Movie> UpddateThumbnail(Guid id, string thumbnail)
