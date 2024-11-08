@@ -34,5 +34,8 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 
 		[Required]
         public IFormFile File { get; set; }
+
+		[Required]
+		public List<Guid> CategoryIds { get; set; }
 	}
 }

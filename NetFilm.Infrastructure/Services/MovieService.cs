@@ -29,7 +29,7 @@ namespace NetFilm.Infrastructure.Services
 			var movieDomain = new Movie()
 			{
 				Name = movieName,
-				Movie_Url = movieUrl,
+				Movie_Url = movieUrl.CreateUrl(),
 				Status = MovieStatus.Daft,
 				Allowing_Age = 0,
 				Average_Star = 0,
@@ -47,10 +47,35 @@ namespace NetFilm.Infrastructure.Services
 			return createdMovieDto;
 		}
 
+		public async Task<IEnumerable<MovieDto>> GetAllAsync()
+		{
+			var movieDomains =  await _movieRepository.GetAllAsync();
+			var movieDtos = _mapper.Map<IEnumerable<MovieDto>>(movieDomains);
+			return movieDtos;
+		}
+
+		public async Task<MovieDto> GetByIdAsync(Guid id)
+		{
+			var isExisted = await _movieRepository.ExistsAsync(id);
+			if(!isExisted)
+			{
+				throw new NotFoundException($"Can not found movie with id: {id}");
+			}
+			var movieDomain = await _movieRepository.GetByIdAsync(id);
+			var movieDto = _mapper.Map<MovieDto>(movieDomain);
+			return movieDto;
+		}
+
 		public async Task<MovieDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto)
 		{
 			await IsExsited(id);
 			var movieDomain = _mapper.Map<Movie>(addMovieRequestDto);
+			List<MovieCategory> movieCate = new List<MovieCategory>();
+			foreach (var category in addMovieRequestDto.CategoryIds)
+			{
+				movieCate.Add(new MovieCategory { CategoryId = category, MovieId = id });
+			}
+			movieDomain.MovieCategories = movieCate;
 			var updatedMovieDomain = await _movieRepository.UpdateDetails(id, movieDomain);
 			var updatedMovieDto = _mapper.Map<MovieDto>(updatedMovieDomain);
 			return updatedMovieDto;

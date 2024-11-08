@@ -12,5 +12,7 @@ namespace NetFilm.Application.Interfaces
 		Task<MovieDto> AddMovieAsync(string movieName, string movieUrl);
 		Task<MovieDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto);
 		Task<MovieDto> UpdateThumbnailAsync(Guid id, string thumbnail);
+		Task<IEnumerable<MovieDto>> GetAllAsync();
+		Task<MovieDto> GetByIdAsync(Guid id);
 	}
 }

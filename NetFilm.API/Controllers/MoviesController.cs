@@ -16,7 +16,7 @@ namespace NetFilm.API.Controllers
 		private readonly IMovieService movieService;
 		private const string BUCKET_MOVIE = "netfilm-dotnet-s3";
 		private const string BUCKET_IMAGE = "netfilm-dotnet-s3-image";
-		private const string BUCKET_SUBTITLE = "netfilm-dotnet-s3-subtitle";
+		private const string DISTRIBUTION_DOMAIN = "https://dqg1h1bamqrgk.cloudfront.net";
 
 		public MoviesController(IAWSService awsService, IMovieService movieService)
 		{
@@ -29,29 +29,37 @@ namespace NetFilm.API.Controllers
 		public async Task<IActionResult> UploadVideoAsync(IFormFile file, string? prefix)
 		{
 			string movieUrl = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
-			await awsService.UploadVideoAsync(file, BUCKET_MOVIE, prefix);
 			var movie = await movieService.AddMovieAsync(file.FileName, movieUrl);
-			return Ok(movie);
+			await awsService.UploadVideoAsync(file, BUCKET_MOVIE, prefix);
+			return CreatedAtAction(nameof(GetById), new { id = movie.Id }, movie);
 		}
 
 		[HttpPut]
 		[Route("{id:guid}/Add/Details")]
 		[ValidateModel]
-		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromBody] AddMovieRequestDto addMovieRequestDto, string? prefix)
+		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromForm] AddMovieRequestDto addMovieRequestDto, string? prefix)
 		{
 			var movie = await movieService.UpdateMovieAsync(id, addMovieRequestDto);
 			string fileName = addMovieRequestDto.File.FileName;
 			string movieUrl = string.IsNullOrEmpty(prefix) ? fileName : $"{prefix}/{fileName}";
 			var movieThumbnail = await movieService.UpdateThumbnailAsync(id, movieUrl);
 			string thumbnail = await awsService.UploadImageAsync(addMovieRequestDto.File, BUCKET_IMAGE, prefix);
-			return Ok(movieThumbnail);
+			return CreatedAtAction(nameof(GetById), new { id = movieThumbnail.Id }, movieThumbnail);
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetAllFile(string bucketName, string? prefix)
+		public async Task<IActionResult> GetAllFile()
 		{
-			var files = await awsService.GetAllFilesAsync(bucketName, prefix);
-			return Ok(files);
+			var movies = await movieService.GetAllAsync();
+			return Ok(movies);
+		}
+
+		[HttpGet]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> GetById([FromRoute] Guid id)
+		{
+			var movie = await movieService.GetByIdAsync(id);
+			return Ok(movie);
 		}
 
 		[HttpGet]
@@ -60,6 +68,13 @@ namespace NetFilm.API.Controllers
 		{
 			var file = await awsService.GetFileByKeyAsync(bucketName, key);
 			return Ok(file);
+		}
+
+		[HttpGet]
+		[Route("spec")]
+		public async Task<IActionResult> GetPaging()
+		{
+
 		}
 
 		[HttpDelete]
