@@ -1,4 +1,5 @@
-﻿using NetFilm.Application.Attributes;
+﻿using Microsoft.AspNetCore.Http;
+using NetFilm.Application.Attributes;
 using NetFilm.Domain.Common;
 using System.ComponentModel.DataAnnotations;
 
@@ -30,5 +31,8 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 
 		[Required]
 		public Guid CountryId { get; set; }
+
+		[Required]
+        public IFormFile File { get; set; }
 	}
 }

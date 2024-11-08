@@ -37,20 +37,14 @@ namespace NetFilm.API.Controllers
 		[HttpPut]
 		[Route("{id:guid}/Add/Details")]
 		[ValidateModel]
-		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromBody] AddMovieRequestDto addMovieRequestDto)
+		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromBody] AddMovieRequestDto addMovieRequestDto, string? prefix)
 		{
 			var movie = await movieService.UpdateMovieAsync(id, addMovieRequestDto);
-			return Ok(movie);
-		}
-
-		[HttpPatch]
-		[Route("{id:guid}/Upload/Thumbnail")]
-		public async Task<IActionResult> UploadThumbnail([FromRoute] Guid id, string? prefix, IFormFile file)
-		{
-			string movieUrl = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
-			var movie = await movieService.UpdateThumbnailAsync(id, movieUrl);
-			string thumbnail = await awsService.UploadImageAsync(file, BUCKET_IMAGE, prefix);
-			return Ok(movie);
+			string fileName = addMovieRequestDto.File.FileName;
+			string movieUrl = string.IsNullOrEmpty(prefix) ? fileName : $"{prefix}/{fileName}";
+			var movieThumbnail = await movieService.UpdateThumbnailAsync(id, movieUrl);
+			string thumbnail = await awsService.UploadImageAsync(addMovieRequestDto.File, BUCKET_IMAGE, prefix);
+			return Ok(movieThumbnail);
 		}
 
 		[HttpGet]
