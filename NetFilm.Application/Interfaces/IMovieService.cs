@@ -14,5 +14,6 @@ namespace NetFilm.Application.Interfaces
 		Task<MovieDto> UpdateThumbnailAsync(Guid id, string thumbnail);
 		Task<IEnumerable<MovieDto>> GetAllAsync();
 		Task<MovieDto> GetByIdAsync(Guid id);
+		Task<IEnumerable<MovieDto>> GetPaging(MovieQueryParam queryParam);
 	}
 }

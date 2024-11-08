@@ -1,6 +1,7 @@
 ﻿using NetFilm.Domain.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,9 +26,18 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		}
 
 		public string? SearchTerm { get; set; }
-        public MovieStatus? Status { get; set; }
-        public Quality? Quality { get; set; }
-        public int AllowingDate { get; set; }
+		public MovieStatus? Status { get; set; }
+		public Quality? Quality { get; set; }
+		public int? AllowingAge { get; set; }
+		public float? AverageStar { get; set; }
+		public Guid? Country { get; set; }
+		public Guid? Category { get; set; }
+
+		[DataType(DataType.Date)]
+		public DateTime? ReleaseDate { get; set; }
+
+        public string? Includes { get; set; }
+
         public string? SortBy { get; set; }
 
 		public bool Ascending { get; set; } = true;

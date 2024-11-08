@@ -8,6 +8,7 @@ using NetFilm.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,6 +65,21 @@ namespace NetFilm.Infrastructure.Services
 			var movieDomain = await _movieRepository.GetByIdAsync(id);
 			var movieDto = _mapper.Map<MovieDto>(movieDomain);
 			return movieDto;
+		}
+
+		public Task<IEnumerable<MovieDto>> GetPaging(MovieQueryParam queryParam)
+		{
+			Expression<Func<Movie, bool>> filter = x => (
+				(string.IsNullOrWhiteSpace(queryParam.SearchTerm) || x.Name.Contains(queryParam.SearchTerm) || x.Description.Contains(queryParam.SearchTerm)) &&
+				(!queryParam.Status.HasValue || x.Status == queryParam.Status) &&
+				(!queryParam.Quality.HasValue || x.Quality == queryParam.Quality) &&
+				(!queryParam.AllowingAge.HasValue || x.Allowing_Age >= queryParam.AllowingAge) &&
+				(!queryParam.AverageStar.HasValue || x.Average_Star >= queryParam.AverageStar) &&
+				(!queryParam.Country.HasValue || x.CountryId == queryParam.Country) &&
+				(!queryParam.Category.HasValue || x.MovieCategories.Select(x => x.CategoryId).ToList().Contains(queryParam.Category.Value)) &&
+				(!queryParam.ReleaseDate.HasValue || x.Release_Date >= queryParam.ReleaseDate)
+			);
+			return null;
 		}
 
 		public async Task<MovieDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto)
