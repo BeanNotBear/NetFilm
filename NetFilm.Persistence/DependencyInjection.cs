@@ -18,6 +18,9 @@ namespace NetFilm.Persistence
 
 			// DI for repository
 			services.AddScoped<ICountryRepository, CountryRepository>();
+			services.AddScoped<IMovieRepository, MovieRepository>();
+			services.AddScoped<ISubtitleRepository, SubtitleRepository>();
+			
 			services.AddScoped<ICategoryRepository, CategoryRepository>();
 			services.AddScoped<ICommentRepository, CommentRepository>();
 		}

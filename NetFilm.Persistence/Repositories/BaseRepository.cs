@@ -22,24 +22,24 @@ namespace NetFilm.Persistence.Repositories
 			_dbSet = context.Set<TEntity>();
 		}
 
-		public async Task<TEntity> AddAsync(TEntity entity)
+		public virtual async Task<TEntity> AddAsync(TEntity entity)
 		{
 			await _dbSet.AddAsync(entity);
 			await _context.SaveChangesAsync();
 			return entity;
 		}
 
-		public async Task<int> CountAsync()
+		public virtual async Task<int> CountAsync()
 		{
 			return await _dbSet.CountAsync();
 		}
 
-		public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+		public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
 		{
 			return await _dbSet.CountAsync(predicate);
 		}
 
-		public async Task<bool> DeleteAsync(TId id)
+		public virtual async Task<bool> DeleteAsync(TId id)
 		{
 			var entity = await _dbSet.FindAsync(id);
 			if (entity == null)
@@ -50,23 +50,23 @@ namespace NetFilm.Persistence.Repositories
 			return true;
 		}
 
-		public async Task<bool> ExistsAsync(TId id)
+		public virtual async Task<bool> ExistsAsync(TId id)
 		{
 			var entity = await _dbSet.FindAsync(id);
 			return entity != null;
 		}
 
-		public async Task<IEnumerable<TEntity>> GetAllAsync()
+		public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
 		{
 			return await _dbSet.ToListAsync();
 		}
 
-		public async Task<TEntity> GetByIdAsync(TId id)
+		public virtual async Task<TEntity> GetByIdAsync(TId id)
 		{
 			return await _dbSet.FindAsync(id);
 		}
 
-		public async Task<PagedResult<TEntity>> GetPagedResultAsync(
+		public virtual async Task<PagedResult<TEntity>> GetPagedResultAsync(
 			Expression<Func<TEntity, bool>>? filter = null,
 			Func<IReadOnlyList<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
 			string includes = "",
@@ -109,7 +109,7 @@ namespace NetFilm.Persistence.Repositories
 			return new PagedResult<TEntity>(items, totalItems, pageIndex, pageSize);
 		}
 
-		public async Task<TEntity> UpdateAsync(TEntity entity)
+		public virtual async Task<TEntity> UpdateAsync(TEntity entity)
 		{
 			_context.Entry(entity).State = EntityState.Modified;
 			await _context.SaveChangesAsync();

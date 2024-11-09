@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using NetFilm.Application.DTOs.CountryDTOs;
+using NetFilm.Application.DTOs.MovieDTOs;
+using NetFilm.Application.DTOs.SubtitleDTOs;
 using NetFilm.Domain.Entities;
 using NetFilm.Application.DTOs.MovieCategoryDtos;
 using System;
@@ -37,6 +39,12 @@ namespace NetFilm.Infrastructure.Mappers
 				.ReverseMap();
 			//Mapper for User
 
+			// Mapper for Movie
+			CreateMap<Movie, MovieDto>().ReverseMap();
+			CreateMap<AddMovieRequestDto, Movie>();
+
+			// Mapper for subtitle
+			CreateMap<Subtitle, SubtitleDto>().ReverseMap();
 		}
 	}
 }

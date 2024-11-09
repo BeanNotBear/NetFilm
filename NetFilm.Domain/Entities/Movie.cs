@@ -1,4 +1,5 @@
 ﻿using NetFilm.Domain.Common;
+using System.ComponentModel;
 
 namespace NetFilm.Domain.Entities
 {
@@ -15,7 +16,7 @@ namespace NetFilm.Domain.Entities
 		public DateTime Release_Date { get; set; }
 		public int Duration { get; set; }
 		public int TotalViews { get; set; }
-		public Guid CountryId { get; set; }
+		public Guid? CountryId { get; set; }
 		public Country Country { get; set; }
 		public ICollection<MovieCategory> MovieCategories { get; set; }
 		public ICollection<MovieParticipant> MovieParticipants { get; set; }

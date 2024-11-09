@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetFilm.Persistence.Data;
 
@@ -11,9 +12,11 @@ using NetFilm.Persistence.Data;
 namespace NetFilm.Persistence.Data.Migrations
 {
     [DbContext(typeof(NetFilmDbContext))]
-    partial class NetFilmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241107081950_DefaultValueOfTotalView")]
+    partial class DefaultValueOfTotalView
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,7 +187,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Advertises", (string)null);
+                    b.ToTable("Advertises");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Category", b =>
@@ -202,7 +205,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Comment", b =>
@@ -236,7 +239,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Country", b =>
@@ -254,7 +257,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Countries", (string)null);
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Movie", b =>
@@ -314,7 +317,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("Movies", (string)null);
+                    b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.MovieCategory", b =>
@@ -329,7 +332,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("MovieCategories", (string)null);
+                    b.ToTable("MovieCategories");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.MovieParticipant", b =>
@@ -344,7 +347,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("MovieParticipants", (string)null);
+                    b.ToTable("MovieParticipants");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Participant", b =>
@@ -366,7 +369,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Participants", (string)null);
+                    b.ToTable("Participants");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Subtitle", b =>
@@ -393,7 +396,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("Subtitles", (string)null);
+                    b.ToTable("Subtitles");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.User", b =>
@@ -497,7 +500,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Votes", (string)null);
+                    b.ToTable("Votes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
