@@ -50,7 +50,7 @@ namespace NetFilm.Infrastructure.Services
 
 		public async Task<IEnumerable<MovieDto>> GetAllAsync()
 		{
-			var movieDomains =  await _movieRepository.GetAllAsync();
+			var movieDomains = await _movieRepository.GetAllAsync();
 			var movieDtos = _mapper.Map<IEnumerable<MovieDto>>(movieDomains);
 			return movieDtos;
 		}
@@ -58,7 +58,7 @@ namespace NetFilm.Infrastructure.Services
 		public async Task<MovieDto> GetByIdAsync(Guid id)
 		{
 			var isExisted = await _movieRepository.ExistsAsync(id);
-			if(!isExisted)
+			if (!isExisted)
 			{
 				throw new NotFoundException($"Can not found movie with id: {id}");
 			}
@@ -67,7 +67,7 @@ namespace NetFilm.Infrastructure.Services
 			return movieDto;
 		}
 
-		public Task<IEnumerable<MovieDto>> GetPaging(MovieQueryParam queryParam)
+		public async Task<PagedResult<MovieDto>> GetPaging(MovieQueryParam queryParam)
 		{
 			Expression<Func<Movie, bool>> filter = x => (
 				(string.IsNullOrWhiteSpace(queryParam.SearchTerm) || x.Name.Contains(queryParam.SearchTerm) || x.Description.Contains(queryParam.SearchTerm)) &&
@@ -79,7 +79,36 @@ namespace NetFilm.Infrastructure.Services
 				(!queryParam.Category.HasValue || x.MovieCategories.Select(x => x.CategoryId).ToList().Contains(queryParam.Category.Value)) &&
 				(!queryParam.ReleaseDate.HasValue || x.Release_Date >= queryParam.ReleaseDate)
 			);
-			return null;
+
+			Func<IReadOnlyList<Movie>, IOrderedQueryable<Movie>>? orderBy = null;
+
+			if (!string.IsNullOrWhiteSpace(queryParam.SortBy))
+			{
+				orderBy = movies =>
+				{
+					var query = movies.AsQueryable();
+					return queryParam.SortBy.ToLower() switch
+					{
+						"name" => queryParam.Ascending
+							? query.OrderBy(x => x.Name)
+							: query.OrderByDescending(x => x.Name),
+						"releasedate" => queryParam.Ascending
+							? query.OrderBy(x => x.Release_Date)
+							: query.OrderByDescending(x => x.Release_Date),
+						"averagestar" => queryParam.Ascending
+							? query.OrderBy(x => x.Average_Star)
+							: query.OrderByDescending(x => x.Average_Star),
+						"allowingage" => queryParam.Ascending
+							? query.OrderBy(x => x.Allowing_Age)
+							: query.OrderByDescending(x => x.Allowing_Age),
+						_ => query.OrderByDescending(x => x.Release_Date) // default sorting
+					};
+				};
+			}
+
+			var pageResultDomain = await _movieRepository.GetPagedResultAsync(filter, orderBy, queryParam.Includes, queryParam.PageIndex, queryParam.PageSize);
+			var pageResultDto = _mapper.Map<PagedResult<MovieDto>>(pageResultDomain);
+			return pageResultDto;
 		}
 
 		public async Task<MovieDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto)

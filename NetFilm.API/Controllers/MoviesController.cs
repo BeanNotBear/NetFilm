@@ -74,7 +74,8 @@ namespace NetFilm.API.Controllers
 		[Route("spec")]
 		public async Task<IActionResult> GetPaging([FromQuery] MovieQueryParam movieQueryParam)
 		{
-			return null;
+			var movie = await movieService.GetPaging(movieQueryParam);
+			return Ok(movie);
 		}
 
 		[HttpDelete]

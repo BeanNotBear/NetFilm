@@ -2,6 +2,7 @@
 using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Application.DTOs.SubtitleDTOs;
+using NetFilm.Domain.Common;
 using NetFilm.Domain.Entities;
 
 namespace NetFilm.Infrastructure.Mappers
@@ -19,6 +20,7 @@ namespace NetFilm.Infrastructure.Mappers
 			// Mapper for Movie
 			CreateMap<Movie, MovieDto>().ReverseMap();
 			CreateMap<AddMovieRequestDto, Movie>();
+			CreateMap<PagedResult<Movie>, PagedResult<MovieDto>>();
 
 			// Mapper for subtitle
 			CreateMap<Subtitle, SubtitleDto>().ReverseMap();
