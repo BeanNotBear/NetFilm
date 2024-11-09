@@ -27,6 +27,7 @@ namespace NetFilm.Infrastructure
 			// Injected User Service
 			services.AddTransient<ICountryService, CountryService>();
 			services.AddScoped<ICategoryService, CategoryService>();
+			services.AddScoped<ICommentService, CommentService>();
 		}
 	}
 }

@@ -255,7 +255,7 @@ namespace NetFilm.Persistence.Data.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>

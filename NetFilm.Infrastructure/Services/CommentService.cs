@@ -27,19 +27,21 @@ namespace NetFilm.Infrastructure.Services
         public async Task<CommentDto> Add(AddCommentDto addCommentDto)
         {
             var comment = _mapper.Map<Comment>(addCommentDto);
+            comment.Id = Guid.NewGuid();
+            comment.Date = DateOnly.FromDateTime(DateTime.Now);
             await _commentRepository.AddAsync(comment);
-            return _mapper.Map<CommentDto>(comment);
+            return _mapper.Map<CommentDto>(await _commentRepository.GetCommentByIdAsync(comment.Id));
         }
 
         public async Task<IEnumerable<CommentDto>> GetAll()
         {
-            var comments = await _commentRepository.GetAllAsync();
+            var comments = await _commentRepository.GetAllCommentsAsync();
             return _mapper.Map<IEnumerable<CommentDto>>(comments);
         }
 
         public async Task<CommentDto> GetById(Guid id)
         {
-            var comment = await _commentRepository.GetByIdAsync(id);
+            var comment = await _commentRepository.GetCommentByIdAsync(id);
             if (comment == null)
             {
                 throw new NotFoundException($"Can not found comment with Id {id}");
@@ -49,7 +51,7 @@ namespace NetFilm.Infrastructure.Services
 
         public async Task<IEnumerable<CommentDto>> GetCommentByMovieId(Guid movieId)
         {
-            var comments = await _commentRepository.GetByIdMovieAsync(movieId);
+            var comments = await _commentRepository.GetAllCommentsByMovieIdAsync(movieId);
             return _mapper.Map<IEnumerable<CommentDto>>(comments);
         }
 
@@ -57,6 +59,12 @@ namespace NetFilm.Infrastructure.Services
         {
             var comments = await _commentRepository.GetByIdCommentAsync(commentId);
             return _mapper.Map<IEnumerable<CommentDto>>(comments);
+        }
+
+        public async Task<IEnumerable<ReplyDto>> GetAllRepliesByCommentId(Guid commentId)
+        {
+            var replies = await _commentRepository.GetAllRepliesByCommentIdAsync(commentId);
+            return _mapper.Map<IEnumerable<ReplyDto>>(replies);
         }
 
         public async Task<bool> HardDelete(Guid id)
@@ -74,22 +82,32 @@ namespace NetFilm.Infrastructure.Services
             return true;
         }
 
-        //public async Task<CommentDto> Reply(Guid commentId, AddCommentDto Reply)
-        //{
-        //    var isExisted = await _commentRepository.ExistsAsync(commentId);
-        //    if (!isExisted)
-        //    {
-        //        throw new NotFoundException($"Can not found comment with Id {commentId}");
-        //    }
-        //    var reply = new Comment
-        //    {
-        //        Id = new Guid(),
-        //        Content = Reply.Content,
-        //        Date = DateOnly.Parse(DateTime.Now.ToString()),
-        //        CommentId = commentId,
-        //    };
+        public async Task<ReplyDto> Reply(AddReplyDto reply)
+        {
+            var commentExisted = await _commentRepository.GetCommentByIdAsync(reply.CommentId);
+            var comment = new Comment
+            {
+                Id = new Guid(),
+                Content = reply.Content,
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                CommentId = reply.CommentId,
+                MovieId = commentExisted.MovieId,
+                UserId = reply.UserId,
+            };
+            await _commentRepository.AddAsync(comment);
+            return _mapper.Map<ReplyDto>(comment);
+        }
 
-        //}
+        public async Task<CommentDto> SoftDelete(Guid id)
+        {
+            var isExisted = await _commentRepository.ExistsAsync(id);
+            if (!isExisted)
+            {
+                throw new NotFoundException($"Can not found comment with Id {id}");
+            }
+            await _commentRepository.SoftDeleteAsync(id);
+            return _mapper.Map<CommentDto>(_commentRepository.GetCommentByIdAsync(id));
+        }
 
         public async Task<CommentDto> Update(Guid id, UpdateCommentDto updateCommentDto)
         {
@@ -104,7 +122,7 @@ namespace NetFilm.Infrastructure.Services
             {
                 throw new Exception("Some things went wrong!");
             }
-            return _mapper.Map<CommentDto>(updateComment);
+            return _mapper.Map<CommentDto>(await _commentRepository.GetCommentByIdAsync(id));
         }
     }
 }

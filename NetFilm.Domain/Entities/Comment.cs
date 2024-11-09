@@ -16,7 +16,7 @@ namespace NetFilm.Domain.Entities
 
         [Column("ReplyId")]
         
-        public Guid CommentId { get; set; }
+        public Guid? CommentId { get; set; }
         public Guid UserId { get; set; }
         public Movie Movie { get; set; }
 

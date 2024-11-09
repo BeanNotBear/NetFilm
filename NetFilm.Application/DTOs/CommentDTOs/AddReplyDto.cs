@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 
 namespace NetFilm.Application.DTOs.CommentDTOs
 {
-    public class AddCommentDto
+    public class AddReplyDto
     {
+        [Required]
+        public Guid CommentId { get; set; }
         [Required]
         public string Content { get; set; }
         [Required]
         public Guid UserId { get; set; }
-        [Required]
-        public Guid MovieId { get; set; }
-
     }
 }

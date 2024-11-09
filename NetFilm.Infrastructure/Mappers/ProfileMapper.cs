@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NetFilm.Application.DTOs.CategoryDtos;
+using NetFilm.Application.DTOs.CommentDTOs;
 
 namespace NetFilm.Infrastructure.Mappers
 {
@@ -18,9 +19,22 @@ namespace NetFilm.Infrastructure.Mappers
 			// Mapper for country
 			CreateMap<Country, CountryDto>().ReverseMap();
 			CreateMap<AddCountryRequestDto, Country>();
+
+			// Mapper for Category
 			CreateMap<Category,CategoryDto>().ReverseMap();
 			CreateMap<Category,ChangeCategoryDto>().ReverseMap();
 
+			// Mapper for Commnet
+			CreateMap<Comment,CommentDto>()
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForMember(dest => dest.Movie, opt => opt.MapFrom(src => src.Movie.Name))
+                .ReverseMap();
+			CreateMap<Comment, AddCommentDto>().ReverseMap();
+			CreateMap<Comment, UpdateCommentDto>().ReverseMap();
+			CreateMap<Comment, ReplyDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForMember(dest => dest.Movie, opt => opt.MapFrom(src => src.Movie.Name))
+				.ReverseMap();
 			//Mapper for User
 
 		}
