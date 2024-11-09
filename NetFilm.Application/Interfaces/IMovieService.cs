@@ -16,5 +16,6 @@ namespace NetFilm.Application.Interfaces
 		Task<IEnumerable<MovieDto>> GetAllAsync();
 		Task<MovieDto> GetByIdAsync(Guid id);
 		Task<PagedResult<MovieDto>> GetPaging(MovieQueryParam queryParam);
+		Task<MovieDto> UpdateMovieAsync(Guid id, UpdateMovieRequestDto updateMovieRequestDto);
 	}
 }

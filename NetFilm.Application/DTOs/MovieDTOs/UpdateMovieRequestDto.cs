@@ -7,10 +7,8 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 	{
 		public string? Name { get; set; }
 		public string? Description { get; set; }
-		public string? Thumbnail { get; set; }
 		public MovieStatus? Status { get; set; }
 		public Quality? Quality { get; set; }
-		public string? Movie_Url { get; set; }
 		public int? Allowing_Age { get; set; }
 		public DateTime? Release_Date { get; set; }
 		public int? Duration { get; set; }
@@ -19,5 +17,7 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		public IFormFile? ThumbnailImage { get; set; }
         public List<Guid>? CategoryIds { get; set; }
         public List<Guid>? ParticipantIds { get; set; }
-    }
+		public string? PrefixMovie { get; set; } = string.Empty;
+		public string? PrefixThumbnail { get; set; } = string.Empty;
+	}
 }

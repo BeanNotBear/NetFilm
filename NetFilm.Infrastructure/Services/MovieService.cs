@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
@@ -18,11 +19,13 @@ namespace NetFilm.Infrastructure.Services
 	{
 		private readonly IMovieRepository _movieRepository;
 		private readonly IMapper _mapper;
+		private readonly IConfiguration _configuration;
 
-		public MovieService(IMovieRepository movieRepository, IMapper mapper)
+		public MovieService(IMovieRepository movieRepository, IMapper mapper, IConfiguration configuration)
 		{
 			_movieRepository = movieRepository;
 			_mapper = mapper;
+			_configuration = configuration;
 		}
 
 		public async Task<MovieDto> AddMovieAsync(string movieName, string movieUrl)
@@ -130,6 +133,43 @@ namespace NetFilm.Infrastructure.Services
 		{
 			await IsExsited(id);
 			var updatedMovieDomain = await _movieRepository.UpddateThumbnail(id, thumbnail);
+			var updatedMovieDto = _mapper.Map<MovieDto>(updatedMovieDomain);
+			return updatedMovieDto;
+		}
+
+		public async Task<MovieDto> UpdateMovieAsync(Guid id, UpdateMovieRequestDto updateMovieRequestDto)
+		{
+			await IsExsited(id);
+			var movieDomain = await _movieRepository.GetByIdAsync(id);
+			List<MovieCategory> movieCate = new List<MovieCategory>();
+			if (updateMovieRequestDto.CategoryIds != null)
+			{
+				foreach (var category in updateMovieRequestDto.CategoryIds)
+				{
+					movieCate.Add(new MovieCategory { CategoryId = category, MovieId = id });
+				}
+			}
+			List<MovieParticipant> movieParticipants = new List<MovieParticipant>();
+			if (updateMovieRequestDto.ParticipantIds != null)
+			{
+				foreach (var paticipant in updateMovieRequestDto.ParticipantIds)
+				{
+					movieParticipants.Add(new MovieParticipant { ParticipantId = paticipant, MovieId = id });
+				}
+			}
+			movieDomain.Name = updateMovieRequestDto.Name != null ? updateMovieRequestDto.Name : movieDomain.Name;
+			movieDomain.Description = updateMovieRequestDto.Description != null ? updateMovieRequestDto.Description : movieDomain.Description;
+			movieDomain.Thumbnail = updateMovieRequestDto.ThumbnailImage != null ? updateMovieRequestDto.ThumbnailImage.FileName.CreateUrl() : movieDomain.Thumbnail;
+			movieDomain.Status = updateMovieRequestDto.Status != null ? updateMovieRequestDto.Status.Value : movieDomain.Status;
+			movieDomain.Quality = updateMovieRequestDto.Quality != null ? updateMovieRequestDto.Quality.Value : movieDomain.Quality;
+			movieDomain.Movie_Url = updateMovieRequestDto.Movie != null ? updateMovieRequestDto.Movie.FileName.CreateUrl() : movieDomain.Movie_Url;
+			movieDomain.Allowing_Age = updateMovieRequestDto.Allowing_Age != null ? updateMovieRequestDto.Allowing_Age.Value : movieDomain.Allowing_Age;
+			movieDomain.Release_Date = updateMovieRequestDto.Release_Date != null ? updateMovieRequestDto.Release_Date.Value : movieDomain.Release_Date;
+			movieDomain.Duration = updateMovieRequestDto.Duration != null ? updateMovieRequestDto.Duration.Value : movieDomain.Duration;
+			movieDomain.CountryId = updateMovieRequestDto.CountryId != null ? updateMovieRequestDto.CountryId.Value : movieDomain.CountryId;
+			movieDomain.MovieCategories = movieCate.Count > 0 ? movieCate : movieDomain.MovieCategories;
+			movieDomain.MovieParticipants = movieParticipants.Count > 0 ? movieParticipants : movieDomain.MovieParticipants;
+			var updatedMovieDomain = await _movieRepository.UpdateAsync(movieDomain);
 			var updatedMovieDto = _mapper.Map<MovieDto>(updatedMovieDomain);
 			return updatedMovieDto;
 		}

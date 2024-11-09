@@ -20,5 +20,6 @@ namespace NetFilm.Domain.Entities
 		public Country Country { get; set; }
 		public ICollection<MovieCategory> MovieCategories { get; set; }
 		public ICollection<MovieParticipant> MovieParticipants { get; set; }
+		public ICollection<Subtitle> Subtitles { get; set; }
 	}
 }
