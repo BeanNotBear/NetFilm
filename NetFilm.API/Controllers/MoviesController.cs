@@ -84,5 +84,12 @@ namespace NetFilm.API.Controllers
 			var isDeleted = await awsService.DeleteFileAsync(bucketName, key);
 			return NoContent();
 		}
+
+		[HttpPut]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> UpdateMovie([FromRoute] Guid id, [FromForm] UpdateMovieRequestDto updateMovieRequestDto)
+		{
+			return null;
+		}
 	}
 }
