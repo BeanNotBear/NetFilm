@@ -70,12 +70,12 @@ namespace NetFilm.API.Controllers
 			return Ok(file);
 		}
 
-		[HttpGet]
-		[Route("spec")]
-		public async Task<IActionResult> GetPaging()
-		{
+		//[HttpGet]
+		//[Route("spec")]
+		//public async Task<IActionResult> GetPaging()
+		//{
 
-		}
+		//}
 
 		[HttpDelete]
 		public async Task<IActionResult> DeleteFile(string bucketName, string key)

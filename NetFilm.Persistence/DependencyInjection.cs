@@ -23,6 +23,7 @@ namespace NetFilm.Persistence
 			
 			services.AddScoped<ICategoryRepository, CategoryRepository>();
 			services.AddScoped<ICommentRepository, CommentRepository>();
+			services.AddScoped<IAdvertiseRepository, AdvertiseRepository>();
 		}
 	}
 }

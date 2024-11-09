@@ -33,8 +33,15 @@ namespace NetFilm.Infrastructure
 			// DI for subtitle
 			services.AddScoped<ISubtitleService, SubtitleService>();
 			services.AddTransient<ICountryService, CountryService>();
+
+			// DI for category
 			services.AddScoped<ICategoryService, CategoryService>();
+
+			// DI for comment
 			services.AddScoped<ICommentService, CommentService>();
+
+			// DI for Advertise
+			services.AddScoped<IAdvertiseService, AdvertiseService>();
 		}
 	}
 }

@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NetFilm.Application.DTOs.CategoryDtos;
 using NetFilm.Application.DTOs.CommentDTOs;
+using NetFilm.Application.DTOs.AdvertiseDTOs;
 
 namespace NetFilm.Infrastructure.Mappers
 {
@@ -45,6 +46,13 @@ namespace NetFilm.Infrastructure.Mappers
 
 			// Mapper for subtitle
 			CreateMap<Subtitle, SubtitleDto>().ReverseMap();
+
+			// Mapper for Advertise
+			CreateMap<Advertise,AdvertiseDto>()
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User.LastName))
+				.ReverseMap();
+			CreateMap<Advertise,AddAdvertiseDto>().ReverseMap();
+			CreateMap<Advertise,UpdateAdvertiseDto>().ReverseMap();
 		}
 	}
 }
