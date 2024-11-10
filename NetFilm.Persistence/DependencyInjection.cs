@@ -41,7 +41,7 @@ namespace NetFilm.Persistence
                             Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                     });
 
-            
+
         }
     }
 }
