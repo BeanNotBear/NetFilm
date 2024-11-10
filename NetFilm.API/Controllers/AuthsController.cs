@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.AuthDTOs;
+using NetFilm.Application.DTOs.UserDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Entities;
@@ -59,7 +60,32 @@ namespace NetFilm.API.Controllers
         [Route("EmailVerification")]
         public async Task<IActionResult> EmailVerification(string email, string code)
         {
-            return Ok(await authService.EmailVerification(email, code));
+            var result = await authService.EmailVerification(email, code);
+            if (result)
+            {
+                return Ok("Email confirmed");
+            }
+            return BadRequest("Email can't confirmed");
+        }
+
+        [HttpPost]
+        [Route("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(RequestForgotPasswordDto requestForgotPasswordDto)
+        {
+            return Ok(await authService.ForgotPassword(requestForgotPasswordDto));
+        }
+
+        [HttpPost]
+        [Route("ResetPassword")]
+        [ValidateModel]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto resetPasswordRequestDto)
+        {
+            var result = await authService.ResetPassword(resetPasswordRequestDto);
+            if (result)
+            {
+                return Ok("Reset Password Succesfully");
+            }
+            return BadRequest("Reset Password Failed");
         }
     }
 }

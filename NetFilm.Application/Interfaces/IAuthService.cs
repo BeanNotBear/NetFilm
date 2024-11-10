@@ -12,6 +12,8 @@ namespace NetFilm.Application.Interfaces
     {
         Task<UserDto> Register(RegisterRequestDto registerRequestDto);
         Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto);
-        Task<string> EmailVerification(string email, string code);
+        Task<bool> EmailVerification(string email, string code);
+        Task<ResponseForgotPasswordDto> ForgotPassword(RequestForgotPasswordDto requestForgotPasswordDto);
+        Task<bool> ResetPassword(ResetPasswordRequestDto resetPasswordRequestDto);
     }
 }

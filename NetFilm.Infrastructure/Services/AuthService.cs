@@ -35,7 +35,7 @@ namespace NetFilm.Infrastructure.Services
             this.emailService = emailService;
         }
 
-        public async Task<string> EmailVerification(string email, string code)
+        public async Task<bool> EmailVerification(string email, string code)
         {
             if(code == null && email == null)
             {
@@ -50,13 +50,37 @@ namespace NetFilm.Infrastructure.Services
 
             var isVerified = await userManager.ConfirmEmailAsync(user, code);
 
-            var message = "Email Confirmed";
             if (isVerified.Succeeded)
             {
-                return message;
+                return true;
             }
 
-            return message = "Email can't confirmed";
+            return false;
+        }
+
+        public async Task<ResponseForgotPasswordDto> ForgotPassword(RequestForgotPasswordDto requestForgotPasswordDto)
+        {
+            // Validate user
+            var user = await userManager.FindByEmailAsync(requestForgotPasswordDto.Email);
+            if(user == null)
+            {
+                throw new NotFoundException("Can't found email");
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            if(string.IsNullOrEmpty(token))
+            {
+                throw new NotFoundException("Can't found token");
+            }
+
+            var callbackUrl = $"https://localhost:9999/resetpassword?token={token}&email={user.Email}";
+            //send email
+
+            return new ResponseForgotPasswordDto
+            {
+                Token = token,
+                Email = user.Email,
+            };
         }
 
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
@@ -138,6 +162,28 @@ namespace NetFilm.Infrastructure.Services
             userDto.Roles = userRoles.ToArray();
 
             return userDto;
+        }
+
+        public async Task<bool> ResetPassword(ResetPasswordRequestDto resetPasswordRequestDto)
+        {
+            var user = await userManager.FindByEmailAsync(resetPasswordRequestDto.Email);
+            if (user == null)
+            {
+                throw new NotFoundException("Can't found email");
+            }
+
+            if (!resetPasswordRequestDto.Password.Equals(resetPasswordRequestDto.ConfirmPassword))
+            {
+                throw new ApplicationException("Password and Confirm Password doesn't match");
+            }
+
+            var result = await userManager.ResetPasswordAsync(user, resetPasswordRequestDto.Token, resetPasswordRequestDto.Password);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
