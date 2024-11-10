@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.AuthDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
@@ -22,6 +23,7 @@ namespace NetFilm.API.Controllers
 
         [HttpPost]
         [Route("Register")]
+        [ValidateModel]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
         {
             try

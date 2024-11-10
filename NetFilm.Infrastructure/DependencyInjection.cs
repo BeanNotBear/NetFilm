@@ -1,7 +1,10 @@
-﻿using Amazon.S3;
+﻿using System.Text;
+using Amazon.S3;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Entities;
 using NetFilm.Infrastructure.Mappers;
@@ -43,6 +46,22 @@ namespace NetFilm.Infrastructure
                 .AddTokenProvider<DataProtectorTokenProvider<User>>("NetFilm")
                 .AddEntityFrameworkStores<NetFilmDbContext>()
                 .AddDefaultTokenProviders();
+
+            // Inject Authentication
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //        .AddJwtBearer(options =>
+            //        options.TokenValidationParameters = new TokenValidationParameters
+            //        {
+            //            ValidateIssuer = true,
+            //            ValidateAudience = true,
+            //            ValidateLifetime = true,
+            //            ClockSkew = TimeSpan.Zero,
+            //            ValidateIssuerSigningKey = true,
+            //            ValidIssuer = configuration["Jwt:Issuer"],
+            //            ValidAudience = configuration["Jwt:Audience"],
+            //            IssuerSigningKey = new SymmetricSecurityKey(
+            //                Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+            //        });
 
             // DI for service
             services.AddScoped<ICountryService, CountryService>();

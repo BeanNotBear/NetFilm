@@ -41,7 +41,7 @@ namespace NetFilm.Persistence.Repositories
             var token = new JwtSecurityToken(
                 configuration["Jwt:Issuer"],
                 configuration["Jwt:Audience"],
-                claims,
+                claims: claims,
                 expires: DateTime.Now.AddMinutes(60),
                 signingCredentials: credentials);
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.UserDTOs;
@@ -10,6 +11,7 @@ namespace NetFilm.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class UsersController : ControllerBase
     {
         private readonly IUserService userService;
@@ -51,6 +53,8 @@ namespace NetFilm.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetAllUser()
         {
             return Ok(await userService.GetAll());
@@ -76,6 +80,8 @@ namespace NetFilm.API.Controllers
 
         [HttpGet]
         [Route("PageResult")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetUserPageResult([FromQuery] UserQueryParams userQueryParams)
         {
             try
