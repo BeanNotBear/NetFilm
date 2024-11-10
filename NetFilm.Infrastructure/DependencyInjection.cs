@@ -35,7 +35,10 @@ namespace NetFilm.Infrastructure
 
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedAccount = false;
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedEmail = true;
+
+                //Email confirmation
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
             })
                 .AddTokenProvider<DataProtectorTokenProvider<User>>("NetFilm")
                 .AddEntityFrameworkStores<NetFilmDbContext>()
@@ -52,6 +55,9 @@ namespace NetFilm.Infrastructure
 
             // Inject Auth Service
             services.AddScoped<IAuthService, AuthService>();
+
+            // Inject Email Service
+            services.AddScoped<IEmailService, EmailService>();
         }
     }
 }

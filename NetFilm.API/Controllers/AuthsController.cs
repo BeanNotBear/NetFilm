@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.DTOs.AuthDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Entities;
+using NetFilm.Infrastructure.Services;
 
 namespace NetFilm.API.Controllers
 {
@@ -24,6 +27,10 @@ namespace NetFilm.API.Controllers
             try
             {
                 var userDto = await authService.Register(registerRequestDto);
+                if (userDto != null)
+                {
+                        
+                }
                 return Ok(userDto);
             }
             catch (ApplicationException e)
@@ -44,6 +51,13 @@ namespace NetFilm.API.Controllers
             var response = await authService.Login(loginRequestDto);
             return Ok(response);
 
+        }
+
+        [HttpPost]
+        [Route("EmailVerification")]
+        public async Task<IActionResult> EmailVerification(string email, string code)
+        {
+            return Ok(await authService.EmailVerification(email, code));
         }
     }
 }

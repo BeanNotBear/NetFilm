@@ -20,16 +20,43 @@ namespace NetFilm.Infrastructure.Services
         private readonly IMapper mapper;
         private readonly RoleManager<IdentityRole<Guid>> roleManager;
         private readonly ITokenRepository tokenRepository;
+        private readonly IEmailService emailService;
 
         public AuthService(UserManager<User> userManager,
             IMapper mapper,
             RoleManager<IdentityRole<Guid>> roleManager,
-            ITokenRepository tokenRepository)
+            ITokenRepository tokenRepository,
+            IEmailService emailService)
         {
             this.userManager = userManager;
             this.mapper = mapper;
             this.roleManager = roleManager;
             this.tokenRepository = tokenRepository;
+            this.emailService = emailService;
+        }
+
+        public async Task<string> EmailVerification(string email, string code)
+        {
+            if(code == null && email == null)
+            {
+                throw new NotFoundException("Couldn't find code");
+            }
+
+            var user = await userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                throw new NotFoundException("Couldn't find email");
+            }
+
+            var isVerified = await userManager.ConfirmEmailAsync(user, code);
+
+            var message = "Email Confirmed";
+            if (isVerified.Succeeded)
+            {
+                return message;
+            }
+
+            return message = "Email can't confirmed";
         }
 
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
@@ -38,6 +65,11 @@ namespace NetFilm.Infrastructure.Services
 
             if (user != null)
             {
+                if(!await userManager.IsEmailConfirmedAsync(user))
+                {
+                    throw new NotAuthorizationException("Email is not confirmed");
+                }
+
                 var checkPasswordResult = await userManager.CheckPasswordAsync(user, loginRequestDto.PassWord);
 
                 if (checkPasswordResult)
@@ -45,7 +77,7 @@ namespace NetFilm.Infrastructure.Services
                     // Get Role for this user
                     var roles = await userManager.GetRolesAsync(user);
 
-                    if(roles != null)
+                    if (roles != null)
                     {
                         // Create token
                         var jwtToken = tokenRepository.CreateJWTToken(user, roles.ToList());
@@ -80,12 +112,22 @@ namespace NetFilm.Infrastructure.Services
                 throw new ApplicationException($"Failed to create user: {errors}");
             }
 
-            identityResult = await userManager.AddToRoleAsync(user, "User");
-            if (!identityResult.Succeeded)
+            // Add role
+            var identityResultRole = await userManager.AddToRoleAsync(user, "User");
+            if (!identityResultRole.Succeeded)
             {
                 await userManager.DeleteAsync(user);
-                var errors = string.Join(", ", identityResult.Errors.Select(e => e.Description));
+                var errors = string.Join(", ", identityResultRole.Errors.Select(e => e.Description));
                 throw new ApplicationException($"Failed to assign role: {errors}");
+            }
+
+            if (identityResult.Succeeded)
+            {
+                // Require email confirmation
+                var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                // Email functionality to send the code to user
+                emailService.SendEmail(user.Email,"OTP",code);
             }
 
             // Map to UserDto
