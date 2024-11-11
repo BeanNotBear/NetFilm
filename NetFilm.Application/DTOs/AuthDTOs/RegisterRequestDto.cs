@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using NetFilm.Application.Attributes;
 
-namespace NetFilm.Application.DTOs.UserDTOs
+namespace NetFilm.Application.DTOs.AuthDTOs
 {
-    public class AddUserRequestDto
+    public class RegisterRequestDto
     {
         [Required]
         public string FirstName { get; set; }
@@ -31,7 +31,5 @@ namespace NetFilm.Application.DTOs.UserDTOs
         [Phone]
         [PhoneNumber]
         public string PhoneNumber { get; set; }
-        public string[] Roles { get; set; }
     }
-
 }

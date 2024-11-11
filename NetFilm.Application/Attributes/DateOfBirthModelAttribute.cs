@@ -12,9 +12,9 @@ namespace NetFilm.Application.Attributes
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if (value is DateOnly date)
+            if (value is DateTime date)
             {
-                if (date > DateOnly.FromDateTime(DateTime.Now))
+                if (date > DateTime.Now)
                 {
                     return new ValidationResult(ErrorMessage);
                 }

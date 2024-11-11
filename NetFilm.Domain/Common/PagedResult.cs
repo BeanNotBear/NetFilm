@@ -53,7 +53,7 @@ namespace NetFilm.Domain.Common
 		/// Initializes a new instance of the PagedResult class
 		/// </summary>
 		/// <param name="items">The items in the current page</param>
-		/// <param name="totalItems">The total number of items across all pages</param>
+		/// <param name="totalItems">The total numberc of items across all pages</param>
 		/// <param name="pageIndex">The current page number</param>
 		/// <param name="pageSize">The number of items per page</param>
 		public PagedResult(IEnumerable<TModel> items, int totalItems, int pageIndex, int pageSize)

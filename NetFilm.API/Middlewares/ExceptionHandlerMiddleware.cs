@@ -36,6 +36,11 @@ namespace NetFilm.API.Middlewares
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 			}
+			else if(exception is NotAuthorizationException)
+			{
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+            }
 			else
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
