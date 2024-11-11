@@ -80,9 +80,56 @@ namespace NetFilm.Infrastructure.Services
 				(!queryParam.AverageStar.HasValue || x.Average_Star >= queryParam.AverageStar) &&
 				(!queryParam.Country.HasValue || x.CountryId == queryParam.Country) &&
 				(!queryParam.Category.HasValue || x.MovieCategories.Select(x => x.CategoryId).ToList().Contains(queryParam.Category.Value)) &&
-				(!queryParam.ReleaseDate.HasValue || x.Release_Date >= queryParam.ReleaseDate)
+				(!queryParam.ReleaseDate.HasValue || x.Release_Date >= queryParam.ReleaseDate) &&
+				(!queryParam.IsDeleted.HasValue || x.IsDelete == queryParam.IsDeleted.Value) &&
+				(!queryParam.Participant.HasValue || x.MovieParticipants.Select(x => x.ParticipantId).ToList().Contains(queryParam.Participant.Value))
 			);
 
+			Func<IReadOnlyList<Movie>, IOrderedQueryable<Movie>>? orderBy = null;
+
+			if (!string.IsNullOrWhiteSpace(queryParam.SortBy))
+			{
+				orderBy = movies =>
+				{
+					var query = movies.AsQueryable();
+					return queryParam.SortBy.ToLower() switch
+					{
+						"name" => queryParam.Ascending
+							? query.OrderBy(x => x.Name)
+							: query.OrderByDescending(x => x.Name),
+						"releasedate" => queryParam.Ascending
+							? query.OrderBy(x => x.Release_Date)
+							: query.OrderByDescending(x => x.Release_Date),
+						"averagestar" => queryParam.Ascending
+							? query.OrderBy(x => x.Average_Star)
+							: query.OrderByDescending(x => x.Average_Star),
+						"allowingage" => queryParam.Ascending
+							? query.OrderBy(x => x.Allowing_Age)
+							: query.OrderByDescending(x => x.Allowing_Age),
+						_ => query.OrderByDescending(x => x.Release_Date) // default sorting
+					};
+				};
+			}
+
+			var pageResultDomain = await _movieRepository.GetPagedResultAsync(filter, orderBy, queryParam.Includes, queryParam.PageIndex, queryParam.PageSize);
+			var pageResultDto = _mapper.Map<PagedResult<MovieDto>>(pageResultDomain);
+			return pageResultDto;
+		}
+
+		public async Task<PagedResult<MovieDto>> GetMoviePaging(MovieQueryParam queryParam)
+		{
+			Expression<Func<Movie, bool>> filter = x => (
+				(string.IsNullOrWhiteSpace(queryParam.SearchTerm) || x.Name.Contains(queryParam.SearchTerm) || x.Description.Contains(queryParam.SearchTerm)) &&
+				(!queryParam.Status.HasValue || x.Status == queryParam.Status) &&
+				(!queryParam.Quality.HasValue || x.Quality == queryParam.Quality) &&
+				(!queryParam.AllowingAge.HasValue || x.Allowing_Age >= queryParam.AllowingAge) &&
+				(!queryParam.AverageStar.HasValue || x.Average_Star >= queryParam.AverageStar) &&
+				(!queryParam.Country.HasValue || x.CountryId == queryParam.Country) &&
+				(!queryParam.Category.HasValue || x.MovieCategories.Select(x => x.CategoryId).ToList().Contains(queryParam.Category.Value)) &&
+				(!queryParam.ReleaseDate.HasValue || x.Release_Date >= queryParam.ReleaseDate) &&
+				(x.IsDelete == false) &&
+				(!queryParam.Participant.HasValue || x.MovieParticipants.Select(x => x.ParticipantId).ToList().Contains(queryParam.Participant.Value))
+			);
 			Func<IReadOnlyList<Movie>, IOrderedQueryable<Movie>>? orderBy = null;
 
 			if (!string.IsNullOrWhiteSpace(queryParam.SortBy))
@@ -159,13 +206,22 @@ namespace NetFilm.Infrastructure.Services
 			}
 			movieDomain.Name = updateMovieRequestDto.Name != null ? updateMovieRequestDto.Name : movieDomain.Name;
 			movieDomain.Description = updateMovieRequestDto.Description != null ? updateMovieRequestDto.Description : movieDomain.Description;
+			if (updateMovieRequestDto.ThumbnailImage != null)
+			{
+				// remove old file
+			}
 			movieDomain.Thumbnail = updateMovieRequestDto.ThumbnailImage != null ? updateMovieRequestDto.ThumbnailImage.FileName.CreateUrl() : movieDomain.Thumbnail;
 			movieDomain.Status = updateMovieRequestDto.Status != null ? updateMovieRequestDto.Status.Value : movieDomain.Status;
 			movieDomain.Quality = updateMovieRequestDto.Quality != null ? updateMovieRequestDto.Quality.Value : movieDomain.Quality;
 			movieDomain.Movie_Url = updateMovieRequestDto.Movie != null ? updateMovieRequestDto.Movie.FileName.CreateUrl() : movieDomain.Movie_Url;
+			if (updateMovieRequestDto.Movie != null)
+			{
+				// remove old file
+			}
 			movieDomain.Allowing_Age = updateMovieRequestDto.Allowing_Age != null ? updateMovieRequestDto.Allowing_Age.Value : movieDomain.Allowing_Age;
 			movieDomain.Release_Date = updateMovieRequestDto.Release_Date != null ? updateMovieRequestDto.Release_Date.Value : movieDomain.Release_Date;
 			movieDomain.Duration = updateMovieRequestDto.Duration != null ? updateMovieRequestDto.Duration.Value : movieDomain.Duration;
+			movieDomain.IsDelete = updateMovieRequestDto.IsDelete != null ? updateMovieRequestDto.IsDelete.Value : movieDomain.IsDelete;
 			movieDomain.CountryId = updateMovieRequestDto.CountryId != null ? updateMovieRequestDto.CountryId.Value : movieDomain.CountryId;
 			movieDomain.MovieCategories = movieCate.Count > 0 ? movieCate : movieDomain.MovieCategories;
 			movieDomain.MovieParticipants = movieParticipants.Count > 0 ? movieParticipants : movieDomain.MovieParticipants;
@@ -181,6 +237,14 @@ namespace NetFilm.Infrastructure.Services
 			{
 				throw new ExistedEntityException($"Movie with id {id} is already existed!");
 			}
+		}
+
+		public async Task<MovieDto> SoftDeleteAsync(Guid id)
+		{
+			await IsExsited(id);
+			var movie = await _movieRepository.SoftDelete(id);
+			var movieDto = _mapper.Map<MovieDto>(movie);
+			return movieDto;
 		}
 	}
 }

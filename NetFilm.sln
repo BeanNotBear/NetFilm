@@ -9,15 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{0C75BAFD-8556-4E3A-84AC-4143CB99D7B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.Application", "NetFilm.Application\NetFilm.Application.csproj", "{5DC46792-50F8-4A0D-BCFF-E651C2BC1788}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetFilm.Application", "NetFilm.Application\NetFilm.Application.csproj", "{5DC46792-50F8-4A0D-BCFF-E651C2BC1788}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.Domain", "NetFilm.Domain\NetFilm.Domain.csproj", "{41F0B10E-31A1-4201-B520-E67684F8D4E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetFilm.Domain", "NetFilm.Domain\NetFilm.Domain.csproj", "{41F0B10E-31A1-4201-B520-E67684F8D4E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.Infrastructure", "NetFilm.Infrastructure\NetFilm.Infrastructure.csproj", "{BBFE1F41-3BBE-45C5-A17B-050C578FA1AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetFilm.Infrastructure", "NetFilm.Infrastructure\NetFilm.Infrastructure.csproj", "{BBFE1F41-3BBE-45C5-A17B-050C578FA1AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.Persistence", "NetFilm.Persistence\NetFilm.Persistence.csproj", "{A2CBF375-F3E4-4C21-A1EA-C8EF00B9C3A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetFilm.Persistence", "NetFilm.Persistence\NetFilm.Persistence.csproj", "{A2CBF375-F3E4-4C21-A1EA-C8EF00B9C3A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFilm.API", "NetFilm.API\NetFilm.API.csproj", "{85D14777-99C4-4CDD-AC08-EF974668DB8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetFilm.API", "NetFilm.API\NetFilm.API.csproj", "{85D14777-99C4-4CDD-AC08-EF974668DB8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

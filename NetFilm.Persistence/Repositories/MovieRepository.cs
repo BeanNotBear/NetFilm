@@ -25,7 +25,22 @@ namespace NetFilm.Persistence.Repositories
 
 		public override async Task<Movie> GetByIdAsync(Guid id)
 		{
-			var movie = await _dbContext.Movies.Include(m => m.Country).FirstOrDefaultAsync(m => m.Id == id);
+			var movie = await _dbContext.Movies
+				.Include(m => m.Country)
+				.Include(m => m.Subtitles)
+				.Include(m => m.MovieParticipants)
+				.ThenInclude(p => p.Participant)
+				.Include(m => m.MovieCategories)
+				.ThenInclude(mc => mc.Category)
+				.FirstOrDefaultAsync(m => m.Id == id);
+			return movie;
+		}
+
+		public async Task<Movie> SoftDelete(Guid id)
+		{
+			var movie = await _dbContext.Movies.FindAsync(id);
+			movie.IsDelete = true;
+			await _dbContext.SaveChangesAsync();
 			return movie;
 		}
 

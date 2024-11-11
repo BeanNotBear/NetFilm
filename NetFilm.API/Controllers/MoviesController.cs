@@ -72,10 +72,18 @@ namespace NetFilm.API.Controllers
 		}
 
 		[HttpGet]
-		[Route("spec")]
+		[Route("admin/spec")]
 		public async Task<IActionResult> GetPaging([FromQuery] MovieQueryParam movieQueryParam)
 		{
 			var movie = await movieService.GetPaging(movieQueryParam);
+			return Ok(movie);
+		}
+
+		[HttpGet]
+		[Route("spec")]
+		public async Task<IActionResult> GetPagingViewer([FromQuery] MovieQueryParam movieQueryParam)
+		{
+			var movie = await movieService.GetMoviePaging(movieQueryParam);
 			return Ok(movie);
 		}
 
@@ -86,6 +94,14 @@ namespace NetFilm.API.Controllers
 			return NoContent();
 		}
 
+		[HttpPatch]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> SoftDelete([FromRoute] Guid id)
+		{
+			var movie = await movieService.SoftDeleteAsync(id);
+			return Ok(movie);
+		}
+
 		[HttpPut]
 		[Route("{id:guid}")]
 		public async Task<IActionResult> UpdateMovie([FromRoute] Guid id, [FromForm] UpdateMovieRequestDto updateMovieRequestDto)
@@ -94,11 +110,11 @@ namespace NetFilm.API.Controllers
 			{
 				await awsService.UploadVideoAsync(updateMovieRequestDto.Movie, BUCKET_MOVIE, updateMovieRequestDto.PrefixMovie);
 			}
-			if(updateMovieRequestDto.ThumbnailImage != null)
+			if (updateMovieRequestDto.ThumbnailImage != null)
 			{
 				await awsService.UploadImageAsync(updateMovieRequestDto.ThumbnailImage, BUCKET_IMAGE, updateMovieRequestDto.PrefixThumbnail);
 			}
-			
+
 			var movie = await movieService.UpdateMovieAsync(id, updateMovieRequestDto);
 			return Ok(movie);
 		}

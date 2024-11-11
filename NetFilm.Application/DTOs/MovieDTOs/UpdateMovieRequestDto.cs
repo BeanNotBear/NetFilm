@@ -13,6 +13,7 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		public DateTime? Release_Date { get; set; }
 		public int? Duration { get; set; }
 		public Guid? CountryId { get; set; }
+        public bool? IsDelete { get; set; }
         public IFormFile? Movie { get; set; }
 		public IFormFile? ThumbnailImage { get; set; }
         public List<Guid>? CategoryIds { get; set; }

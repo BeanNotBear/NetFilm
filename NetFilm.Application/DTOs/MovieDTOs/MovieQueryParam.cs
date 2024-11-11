@@ -32,10 +32,11 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		public float? AverageStar { get; set; }
 		public Guid? Country { get; set; }
 		public Guid? Category { get; set; }
+        public Guid? Participant { get; set; }
 
-		[DataType(DataType.Date)]
+        [DataType(DataType.Date)]
 		public DateTime? ReleaseDate { get; set; }
-
+        public bool? IsDeleted { get; set; }
         public string? Includes { get; set; }
 
         public string? SortBy { get; set; }
