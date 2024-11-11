@@ -10,6 +10,9 @@ using NetFilm.Domain.Entities;
 using NetFilm.Infrastructure.Mappers;
 using NetFilm.Infrastructure.Services;
 using NetFilm.Persistence.Data;
+using NetFilm.Domain.Interfaces;
+using NetFilm.Persistence.Repositories;
+
 
 namespace NetFilm.Infrastructure
 {
@@ -94,6 +97,15 @@ namespace NetFilm.Infrastructure
 
             // Inject Email Service
             services.AddScoped<IEmailService, EmailService>();
+            
+
+
+            
+            services.AddTransient<IParticipantService, ParticipantService>();
+            services.AddTransient<IParticipantRepository, ParticipantRepository>();
+
+            services.AddTransient<IVoteService, VoteService>();
+            services.AddTransient<IVoteRepository, VoteRepository>();
         }
     }
 }

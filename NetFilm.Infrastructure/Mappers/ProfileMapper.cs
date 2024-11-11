@@ -7,6 +7,8 @@ using NetFilm.Application.DTOs.SubtitleDTOs;
 using NetFilm.Domain.Common;
 using NetFilm.Application.DTOs.RoleDTOs;
 using NetFilm.Application.DTOs.UserDTOs;
+using NetFilm.Application.DTOs.ParticipantDTOs;
+using NetFilm.Application.DTOs.VoteDtos;
 using NetFilm.Domain.Entities;
 using NetFilm.Application.DTOs.MovieCategoryDtos;
 using System;
@@ -126,6 +128,12 @@ namespace NetFilm.Infrastructure.Mappers
 				.ReverseMap();
 			CreateMap<Advertise,AddAdvertiseDto>().ReverseMap();
 			CreateMap<Advertise,UpdateAdvertiseDto>().ReverseMap();
-		}
+
+            CreateMap<Participant, ParticipantDto>().ReverseMap();
+            CreateMap<AddParticipantRequestDto, Participant>();
+
+            CreateMap<Vote, VoteDto>().ReverseMap();
+            CreateMap<AddVoteRequestDTO, Vote>();
+        }
 	}
 }

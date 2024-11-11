@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using NetFilm.API.Middlewares;
 using NetFilm.Application;
+using NetFilm.Application.Interfaces;
 using NetFilm.Domain;
+using NetFilm.Domain.Interfaces;
 using NetFilm.Infrastructure;
+using NetFilm.Infrastructure.Services;
 using NetFilm.Persistence;
+using NetFilm.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

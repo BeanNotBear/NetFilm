@@ -66,6 +66,7 @@ namespace NetFilm.Persistence.Data
 			{
 				entity.HasKey(x => new { x.ParticipantId, x.MovieId });
 			});
+
 		}
 	}
 }
