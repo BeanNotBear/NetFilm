@@ -28,7 +28,16 @@ namespace NetFilm.Infrastructure
             services.AddScoped<IAWSService, AWSService>();
 
             // Injected User Service
-			//services.AddTransient<ICountryService, CountryService>();
+			services.AddScoped<ICountryService, CountryService>();
+
+            // DI for category
+			services.AddScoped<ICategoryService, CategoryService>();
+
+			// DI for comment
+			services.AddScoped<ICommentService, CommentService>();
+
+			// DI for Advertise
+			services.AddScoped<IAdvertiseService, AdvertiseService>();
 
 			// DI for movie
 			services.AddScoped<IMovieService, MovieService>();

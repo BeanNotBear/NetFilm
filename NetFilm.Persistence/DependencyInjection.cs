@@ -42,8 +42,10 @@ namespace NetFilm.Persistence
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                     });
-
-
-        }
-    }
+			
+			services.AddScoped<ICategoryRepository, CategoryRepository>();
+			services.AddScoped<ICommentRepository, CommentRepository>();
+			services.AddScoped<IAdvertiseRepository, AdvertiseRepository>();
+		}
+	}
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetFilm.Domain.Interfaces;
 
 namespace NetFilm.Domain
 {

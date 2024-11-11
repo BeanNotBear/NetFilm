@@ -8,6 +8,15 @@ using NetFilm.Domain.Common;
 using NetFilm.Application.DTOs.RoleDTOs;
 using NetFilm.Application.DTOs.UserDTOs;
 using NetFilm.Domain.Entities;
+using NetFilm.Application.DTOs.MovieCategoryDtos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NetFilm.Application.DTOs.CategoryDtos;
+using NetFilm.Application.DTOs.CommentDTOs;
+using NetFilm.Application.DTOs.AdvertiseDTOs;
 
 namespace NetFilm.Infrastructure.Mappers
 {
@@ -24,6 +33,22 @@ namespace NetFilm.Infrastructure.Mappers
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ReverseMap();
+			// Mapper for Category
+			CreateMap<Category,CategoryDto>().ReverseMap();
+			CreateMap<Category,ChangeCategoryDto>().ReverseMap();
+
+			// Mapper for Commnet
+			CreateMap<Comment,CommentDto>()
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForMember(dest => dest.Movie, opt => opt.MapFrom(src => src.Movie.Name))
+                .ReverseMap();
+			CreateMap<Comment, AddCommentDto>().ReverseMap();
+			CreateMap<Comment, UpdateCommentDto>().ReverseMap();
+			CreateMap<Comment, ReplyDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForMember(dest => dest.Movie, opt => opt.MapFrom(src => src.Movie.Name))
+				.ReverseMap();
+			//Mapper for User
 
 			// Mapper for Movie
 			CreateMap<Movie, MovieDto>().ReverseMap();
@@ -94,6 +119,13 @@ namespace NetFilm.Infrastructure.Mappers
             .ForMember(dest => dest.LockoutEnabled, opt => opt.Ignore())
             .ForMember(dest => dest.AccessFailedCount, opt => opt.Ignore())
             .ReverseMap();
-        }
-    }
+            
+			// Mapper for Advertise
+			CreateMap<Advertise,AdvertiseDto>()
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User.LastName))
+				.ReverseMap();
+			CreateMap<Advertise,AddAdvertiseDto>().ReverseMap();
+			CreateMap<Advertise,UpdateAdvertiseDto>().ReverseMap();
+		}
+	}
 }
