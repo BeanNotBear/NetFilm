@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Common;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -42,7 +43,7 @@ namespace NetFilm.API.Controllers
 			var movie = await movieService.UpdateMovieAsync(id, addMovieRequestDto);
 			string fileName = addMovieRequestDto.File.FileName;
 			string movieUrl = string.IsNullOrEmpty(prefix) ? fileName : $"{prefix}/{fileName}";
-			var movieThumbnail = await movieService.UpdateThumbnailAsync(id, movieUrl);
+			var movieThumbnail = await movieService.UpdateThumbnailAsync(id, movieUrl.CreateUrl());
 			string thumbnail = await awsService.UploadImageAsync(addMovieRequestDto.File, BUCKET_IMAGE, prefix);
 			return CreatedAtAction(nameof(GetById), new { id = movieThumbnail.Id }, movieThumbnail);
 		}
@@ -71,10 +72,19 @@ namespace NetFilm.API.Controllers
 		}
 
 		[HttpGet]
-		[Route("spec")]
-		public async Task<IActionResult> GetPaging()
+		[Route("admin/spec")]
+		public async Task<IActionResult> GetPaging([FromQuery] MovieQueryParam movieQueryParam)
 		{
+			var movie = await movieService.GetPaging(movieQueryParam);
+			return Ok(movie);
+		}
 
+		[HttpGet]
+		[Route("spec")]
+		public async Task<IActionResult> GetPagingViewer([FromQuery] MovieQueryParam movieQueryParam)
+		{
+			var movie = await movieService.GetMoviePaging(movieQueryParam);
+			return Ok(movie);
 		}
 
 		[HttpDelete]
@@ -82,6 +92,31 @@ namespace NetFilm.API.Controllers
 		{
 			var isDeleted = await awsService.DeleteFileAsync(bucketName, key);
 			return NoContent();
+		}
+
+		[HttpPatch]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> SoftDelete([FromRoute] Guid id)
+		{
+			var movie = await movieService.SoftDeleteAsync(id);
+			return Ok(movie);
+		}
+
+		[HttpPut]
+		[Route("{id:guid}")]
+		public async Task<IActionResult> UpdateMovie([FromRoute] Guid id, [FromForm] UpdateMovieRequestDto updateMovieRequestDto)
+		{
+			if (updateMovieRequestDto.Movie != null)
+			{
+				await awsService.UploadVideoAsync(updateMovieRequestDto.Movie, BUCKET_MOVIE, updateMovieRequestDto.PrefixMovie);
+			}
+			if (updateMovieRequestDto.ThumbnailImage != null)
+			{
+				await awsService.UploadImageAsync(updateMovieRequestDto.ThumbnailImage, BUCKET_IMAGE, updateMovieRequestDto.PrefixThumbnail);
+			}
+
+			var movie = await movieService.UpdateMovieAsync(id, updateMovieRequestDto);
+			return Ok(movie);
 		}
 	}
 }

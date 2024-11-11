@@ -12,5 +12,6 @@ namespace NetFilm.Domain.Interfaces
 		Task<bool> ExistesByName(string name);
 		Task<Movie> UpdateDetails(Guid id, Movie movie);
 		Task<Movie> UpddateThumbnail(Guid id, string thumbnail);
+		Task<Movie> SoftDelete(Guid id);
 	}
 }

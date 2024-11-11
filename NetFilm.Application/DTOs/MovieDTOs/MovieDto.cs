@@ -1,4 +1,5 @@
 ﻿using NetFilm.Application.DTOs.CountryDTOs;
+using NetFilm.Application.DTOs.SubtitleDTOs;
 using NetFilm.Domain.Common;
 
 namespace NetFilm.Application.DTOs.MovieDTOs
@@ -18,5 +19,6 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		public int Duration { get; set; }
 		public int TotalViews { get; set; }
 		public CountryDto Country { get; set; }
+        public ICollection<SubtitleDto> Subtitles { get; set; }
     }
 }
