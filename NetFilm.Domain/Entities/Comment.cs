@@ -11,11 +11,12 @@ namespace NetFilm.Domain.Entities
 	public class Comment : BaseEntity<Guid>
 	{
         public string Content { get; set; }
+
+        [Column(TypeName = "Date")]
         public DateOnly Date { get; set; }
         public Guid MovieId { get; set; }
 
         [Column("ReplyId")]
-        
         public Guid? CommentId { get; set; }
         public Guid UserId { get; set; }
         public Movie Movie { get; set; }

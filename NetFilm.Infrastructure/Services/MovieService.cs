@@ -28,7 +28,7 @@ namespace NetFilm.Infrastructure.Services
 			_configuration = configuration;
 		}
 
-		public async Task<MovieDto> AddMovieAsync(string movieName, string movieUrl)
+		public async Task<MovieDetailDto> AddMovieAsync(string movieName, string movieUrl)
 		{
 			var movieDomain = new Movie()
 			{
@@ -47,7 +47,7 @@ namespace NetFilm.Infrastructure.Services
 				TotalViews = 0,
 			};
 			var createdMovieDomain = await _movieRepository.AddAsync(movieDomain);
-			var createdMovieDto = _mapper.Map<MovieDto>(createdMovieDomain);
+			var createdMovieDto = _mapper.Map<MovieDetailDto>(createdMovieDomain);
 			return createdMovieDto;
 		}
 
@@ -58,7 +58,7 @@ namespace NetFilm.Infrastructure.Services
 			return movieDtos;
 		}
 
-		public async Task<MovieDto> GetByIdAsync(Guid id)
+		public async Task<MovieDetailDto> GetByIdAsync(Guid id)
 		{
 			var isExisted = await _movieRepository.ExistsAsync(id);
 			if (!isExisted)
@@ -66,7 +66,7 @@ namespace NetFilm.Infrastructure.Services
 				throw new NotFoundException($"Can not found movie with id: {id}");
 			}
 			var movieDomain = await _movieRepository.GetByIdAsync(id);
-			var movieDto = _mapper.Map<MovieDto>(movieDomain);
+			var movieDto = _mapper.Map<MovieDetailDto>(movieDomain);
 			return movieDto;
 		}
 
@@ -161,7 +161,7 @@ namespace NetFilm.Infrastructure.Services
 			return pageResultDto;
 		}
 
-		public async Task<MovieDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto)
+		public async Task<MovieDetailDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto)
 		{
 			await IsExsited(id);
 			var movieDomain = _mapper.Map<Movie>(addMovieRequestDto);
@@ -172,15 +172,15 @@ namespace NetFilm.Infrastructure.Services
 			}
 			movieDomain.MovieCategories = movieCate;
 			var updatedMovieDomain = await _movieRepository.UpdateDetails(id, movieDomain);
-			var updatedMovieDto = _mapper.Map<MovieDto>(updatedMovieDomain);
+			var updatedMovieDto = _mapper.Map<MovieDetailDto>(updatedMovieDomain);
 			return updatedMovieDto;
 		}
 
-		public async Task<MovieDto> UpdateThumbnailAsync(Guid id, string thumbnail)
+		public async Task<MovieDetailDto> UpdateThumbnailAsync(Guid id, string thumbnail)
 		{
 			await IsExsited(id);
 			var updatedMovieDomain = await _movieRepository.UpddateThumbnail(id, thumbnail);
-			var updatedMovieDto = _mapper.Map<MovieDto>(updatedMovieDomain);
+			var updatedMovieDto = _mapper.Map<MovieDetailDto>(updatedMovieDomain);
 			return updatedMovieDto;
 		}
 

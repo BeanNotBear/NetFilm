@@ -13,7 +13,6 @@ namespace NetFilm.Application.DTOs.ParticipantDTOs
         public Guid Id { get; set; }
         public string Name { get; set; }
         public RoleInMovie RoleInMovie { get; set; }
-
         public bool IsDelete { get; set; }
     }
 }

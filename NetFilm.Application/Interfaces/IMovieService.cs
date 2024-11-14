@@ -10,11 +10,11 @@ namespace NetFilm.Application.Interfaces
 {
 	public interface IMovieService
 	{
-		Task<MovieDto> AddMovieAsync(string movieName, string movieUrl);
-		Task<MovieDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto);
-		Task<MovieDto> UpdateThumbnailAsync(Guid id, string thumbnail);
+		Task<MovieDetailDto> AddMovieAsync(string movieName, string movieUrl);
+		Task<MovieDetailDto> UpdateMovieAsync(Guid id, AddMovieRequestDto addMovieRequestDto);
+		Task<MovieDetailDto> UpdateThumbnailAsync(Guid id, string thumbnail);
 		Task<IEnumerable<MovieDto>> GetAllAsync();
-		Task<MovieDto> GetByIdAsync(Guid id);
+		Task<MovieDetailDto> GetByIdAsync(Guid id);
 		Task<PagedResult<MovieDto>> GetPaging(MovieQueryParam queryParam);
 		Task<PagedResult<MovieDto>> GetMoviePaging(MovieQueryParam queryParam);
 		Task<MovieDto> UpdateMovieAsync(Guid id, UpdateMovieRequestDto updateMovieRequestDto);

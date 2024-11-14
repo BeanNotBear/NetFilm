@@ -80,8 +80,8 @@ namespace NetFilm.API.Controllers
 
         [HttpGet]
         [Route("PageResult")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetUserPageResult([FromQuery] UserQueryParams userQueryParams)
         {
             try

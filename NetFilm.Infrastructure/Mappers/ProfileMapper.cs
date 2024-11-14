@@ -56,6 +56,13 @@ namespace NetFilm.Infrastructure.Mappers
 			CreateMap<Movie, MovieDto>().ReverseMap();
 			CreateMap<AddMovieRequestDto, Movie>();
 			CreateMap<PagedResult<Movie>, PagedResult<MovieDto>>();
+            CreateMap<Movie, MovieDetailDto>()
+                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country))
+                .ForMember(dest => dest.Subtitles, opt => opt.MapFrom(src => src.Subtitles))
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.MovieCategories.Select(x => x.Category)))
+                .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
+                .ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.MovieParticipants.Select(x => x.Participant)));
+
 
 			// Mapper for subtitle
 			CreateMap<Subtitle, SubtitleDto>().ReverseMap();

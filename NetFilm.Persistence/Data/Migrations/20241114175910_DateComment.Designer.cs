@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetFilm.Persistence.Data;
 
@@ -11,9 +12,11 @@ using NetFilm.Persistence.Data;
 namespace NetFilm.Persistence.Data.Migrations
 {
     [DbContext(typeof(NetFilmDbContext))]
-    partial class NetFilmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114175910_DateComment")]
+    partial class DateComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,7 +221,7 @@ namespace NetFilm.Persistence.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("Date")
-                        .HasColumnType("Date");
+                        .HasColumnType("date");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
