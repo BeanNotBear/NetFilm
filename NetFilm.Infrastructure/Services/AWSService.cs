@@ -3,14 +3,17 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.DTOs.BucketDTOs;
+using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
+using System.Net;
 
 namespace NetFilm.Infrastructure.Services
 {
 	public class AWSService : IAWSService
 	{
 		private readonly IAmazonS3 _amazonS3;
+		private const string DISTRIBUTION_DOMAIN = "https://dqg1h1bamqrgk.cloudfront.net";
 
 		public AWSService(IAmazonS3 amazonS3)
 		{
@@ -46,22 +49,87 @@ namespace NetFilm.Infrastructure.Services
 			return true;
 		}
 
-		public async Task<bool> UploadFileAsync(IFormFile file, string bucketName, string? prefix)
+		public async Task<string> UploadImageAsync(IFormFile file, string bucketName, string? prefix)
+		{
+			var fileExtension = Path.GetExtension(file.FileName);
+			List<string> imageExtensions = new List<string>
+			{
+				".jpg",
+				".jpeg",
+				".png",
+				".gif",
+				".bmp",
+				".tiff",
+				".tif",
+				".webp",
+				".svg",
+				".ico"
+			};
+			if (imageExtensions.Contains(fileExtension))
+			{
+				string key = await UploadFileAsync(file, bucketName, prefix);
+				return key;
+			}
+			throw new FileNotAllowException($"File with {fileExtension} is not allowed!");
+		}
+
+		public async Task<string> UploadVideoAsync(IFormFile file, string bucketName, string? prefix)
+		{
+			var fileExtension = Path.GetExtension(file.FileName);
+			List<string> videoExtensions = new List<string>
+			{
+				".mp4",
+				".webm",
+				".ogg",
+				".mov",
+				".avi",
+				".flv",
+				".3gp",
+				".mkv"
+			};
+			if (videoExtensions.Contains(fileExtension))
+			{
+				string key = await UploadFileAsync(file, bucketName, prefix);
+				return key;
+			}
+			throw new FileNotAllowException($"File with {fileExtension} is not allowed!");
+		}
+
+		public async Task<string> UploadSrtAsync(IFormFile file, string bucketName, string? prefix)
+		{
+			var fileExtension = Path.GetExtension(file.FileName);
+			if (fileExtension == ".srt")
+			{
+				string key = await UploadFileAsync(file, bucketName, prefix);
+				return key;
+			}
+			throw new FileNotAllowException($"File with {fileExtension} is not allowed!");
+		}
+
+		private async Task<string> UploadFileAsync(IFormFile file, string bucketName, string? prefix)
 		{
 			var bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3, bucketName);
 			if (!bucketExists)
 			{
-				throw new NotFoundException($"Can not found bucket with name {bucketName}");
+				throw new NotFoundException($"Cannot find bucket with name {bucketName}");
 			}
-			var request = new PutObjectRequest()
+
+			var fileExtension = Path.GetExtension(file.FileName);
+
+			var key = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
+
+			var request = new PutObjectRequest
 			{
 				BucketName = bucketName,
-				Key = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix?.TrimEnd('/')}/{file.FileName}",
+				Key = key,
 				InputStream = file.OpenReadStream()
 			};
+
 			request.Metadata.Add("Content-Type", file.ContentType);
+
 			await _amazonS3.PutObjectAsync(request);
-			return true;
+
+			return key;
 		}
 
 		public async Task<IEnumerable<S3ObjectDto>> GetAllFilesAsync(string bucketName, string? prefix)
@@ -83,16 +151,17 @@ namespace NetFilm.Infrastructure.Services
 				{
 					BucketName = bucketName,
 					Key = s.Key,
-					Expires = DateTime.UtcNow.AddMinutes(1)
+					Expires = DateTime.UtcNow.AddHours(12)
 				};
 				return new S3ObjectDto()
 				{
 					Name = s.Key.ToString(),
-					PresignedUrl = _amazonS3.GetPreSignedURL(urlRequest),
+					PresignedUrl = GetUrlCloudFront(s.Key)
 				};
 			});
 			return s3Objects;
 		}
+
 
 		public async Task<S3ObjectDto> GetFileByKeyAsync(string bucketName, string key)
 		{
@@ -100,7 +169,6 @@ namespace NetFilm.Infrastructure.Services
 			{
 				if (string.IsNullOrEmpty(bucketName))
 					throw new ArgumentNullException(nameof(bucketName), "Bucket name cannot be null or empty");
-
 				if (string.IsNullOrEmpty(key))
 					throw new ArgumentNullException(nameof(key), "File key cannot be null or empty");
 
@@ -108,23 +176,26 @@ namespace NetFilm.Infrastructure.Services
 				var bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3, bucketName);
 				if (!bucketExists)
 					throw new NotFoundException($"Bucket '{bucketName}' not found");
-				// Attempt to get the object
-				//var s3Object = await _amazonS3.GetObjectAsync(bucketName, key);
-				var urlRequest = new GetPreSignedUrlRequest()
+
+				var s3Object = await _amazonS3.GetObjectAsync(bucketName, key);
+
+				return new S3ObjectDto
 				{
-					BucketName = bucketName,
-					Key = key,
-					Expires = DateTime.UtcNow.AddMinutes(1)
-				};
-				return new S3ObjectDto()
-				{
-					Name = key,
-					PresignedUrl = _amazonS3.GetPreSignedURL(urlRequest),
+					Name = s3Object.Key,
+					PresignedUrl = GetUrlCloudFront(s3Object.Key),
 				};
 			}
 			catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
 			{
 				throw new NotFoundException($"File with key '{key}' not found in bucket '{bucketName}'");
+			}
+			catch (AmazonS3Exception ex) when (ex.ErrorCode == "InvalidAccessKeyId")
+			{
+				throw new Exception("Invalid AWS credentials. Please check your access key.", ex);
+			}
+			catch (AmazonS3Exception ex) when (ex.ErrorCode == "SignatureDoesNotMatch")
+			{
+				throw new Exception("Invalid AWS credentials. Please check your secret key.", ex);
 			}
 			catch (Exception ex)
 			{
@@ -142,6 +213,11 @@ namespace NetFilm.Infrastructure.Services
 
 			await _amazonS3.DeleteObjectAsync(bucketName, key);
 			return true;
+		}
+
+		private string GetUrlCloudFront(string key)
+		{
+			return $"{DISTRIBUTION_DOMAIN}/{key}";
 		}
 	}
 }

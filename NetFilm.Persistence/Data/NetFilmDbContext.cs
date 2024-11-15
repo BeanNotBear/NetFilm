@@ -22,7 +22,8 @@ namespace NetFilm.Persistence.Data
 		public DbSet<Comment> Comments { get; set; }
 		public DbSet<Country> Countries { get; set; }
 		public DbSet<Movie> Movies { get; set; }
-		public DbSet<MovieCategory> MovieCategories { get; set; }
+        public DbSet<Subtitle> Subtitles { get; set; }
+        public DbSet<MovieCategory> MovieCategories { get; set; }
 		public DbSet<Participant> Participants { get; set; }
 		public DbSet<MovieParticipant> MovieParticipants { get; set; }
 		public DbSet<Vote> Votes { get; set; }
@@ -48,6 +49,12 @@ namespace NetFilm.Persistence.Data
 			modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
 			modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
 			modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
+
+			modelBuilder.Entity<Movie>(entity =>
+			{
+				entity.Property(x => x.Average_Star).HasDefaultValue(0);
+				entity.Property(x => x.TotalViews).HasDefaultValue(0);
+			});
 
 			// Your other entity configurations
 			modelBuilder.Entity<MovieCategory>(entity =>

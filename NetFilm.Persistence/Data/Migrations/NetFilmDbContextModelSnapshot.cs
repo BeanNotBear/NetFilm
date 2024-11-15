@@ -163,9 +163,6 @@ namespace NetFilm.Persistence.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -178,7 +175,8 @@ namespace NetFilm.Persistence.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatedBy");
 
                     b.HasKey("Id");
 
@@ -211,13 +209,16 @@ namespace NetFilm.Persistence.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CommentId")
+                    b.Property<Guid?>("CommentId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("ReplyId");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -267,7 +268,9 @@ namespace NetFilm.Persistence.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<float>("Average_Star")
-                        .HasColumnType("real");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("real")
+                        .HasDefaultValue(0f);
 
                     b.Property<Guid>("CountryId")
                         .HasColumnType("uniqueidentifier");
@@ -304,7 +307,9 @@ namespace NetFilm.Persistence.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TotalViews")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -340,7 +345,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("MovieParticipants");
+                    b.ToTable("MovieParticipants", (string)null);
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Participant", b =>
@@ -362,7 +367,34 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Participants");
+                    b.ToTable("Participants", (string)null);
+                });
+
+            modelBuilder.Entity("NetFilm.Domain.Entities.Subtitle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SubtitleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubtitleUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("Subtitles", (string)null);
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.User", b =>
@@ -466,7 +498,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Votes");
+                    b.ToTable("Votes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -536,8 +568,7 @@ namespace NetFilm.Persistence.Data.Migrations
                     b.HasOne("NetFilm.Domain.Entities.Comment", null)
                         .WithMany("Comments")
                         .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("NetFilm.Domain.Entities.Movie", "Movie")
                         .WithMany()
@@ -603,6 +634,17 @@ namespace NetFilm.Persistence.Data.Migrations
                     b.Navigation("Movie");
 
                     b.Navigation("Participant");
+                });
+
+            modelBuilder.Entity("NetFilm.Domain.Entities.Subtitle", b =>
+                {
+                    b.HasOne("NetFilm.Domain.Entities.Movie", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Vote", b =>
