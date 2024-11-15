@@ -55,23 +55,31 @@ builder.Services.AddPersistenceService(builder.Configuration);
 
 builder.Services.Configure<FormOptions>(x =>
 {
-	x.ValueLengthLimit = int.MaxValue;
-	x.MultipartBodyLengthLimit = 5L * 1024 * 1024 * 1024;
+    x.ValueLengthLimit = int.MaxValue;
+    x.MultipartBodyLengthLimit = 5L * 1024 * 1024 * 1024;
 });
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-	options.Limits.MaxRequestBodySize = 5L * 1024 * 1024 * 1024;
+    options.Limits.MaxRequestBodySize = 5L * 1024 * 1024 * 1024;
 });
+
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+// API Enable Cors
+app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 

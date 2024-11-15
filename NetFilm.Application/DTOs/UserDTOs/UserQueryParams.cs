@@ -20,7 +20,7 @@ namespace NetFilm.Application.DTOs.UserDTOs
         public int PageSize
         {
             get => _pageSize;
-            set => _pageSize = value <= 0 ? 10 : Math.Min(value, 25);
+            set => _pageSize = value <= 0 ? 10 : Math.Min(value, 50);
         }
 
         public string? SearchTerm { get; set; }
