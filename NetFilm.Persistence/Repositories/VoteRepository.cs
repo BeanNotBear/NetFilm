@@ -1,4 +1,5 @@
-﻿using NetFilm.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
 using NetFilm.Persistence.Data;
 using System;
@@ -30,6 +31,20 @@ namespace NetFilm.Persistence.Repositories
             entity.IsDelete = true;
             await _context.SaveChangesAsync();
             return entity;
+        }
+        public async Task<Vote?> GetVoteAsync(Guid movieId, Guid userId)
+        {
+            var vote = await _context.Votes
+                         .FirstOrDefaultAsync(v => v.MovieId == movieId && v.UserId == userId);
+            return vote;
+        }
+        public async Task<int> CountMovie(Guid movieId)
+        {
+            return await _context.Votes.CountAsync(v => v.MovieId == movieId);
+        }
+        public async Task<bool> CheckExists(Guid moviewId, Guid userId)
+        {
+            return await _context.Votes.AnyAsync(v => v.MovieId == moviewId && v.UserId == userId);
         }
     }
 }

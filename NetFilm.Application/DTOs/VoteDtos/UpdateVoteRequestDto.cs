@@ -10,6 +10,9 @@ namespace NetFilm.Application.DTOs.VoteDtos
 {
     public class UpdateVoteRequestDTO
     {
+        [Required]
+        public Guid UserId { get; set; }
+        public Guid MovieId { get; set; }
         public int Star { get; set; }
     }
 }
