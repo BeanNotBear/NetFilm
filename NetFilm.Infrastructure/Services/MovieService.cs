@@ -45,6 +45,7 @@ namespace NetFilm.Infrastructure.Services
 				Release_Date = DateTime.Now,
 				IsDelete = false,
 				TotalViews = 0,
+				Comments = []
 			};
 			var createdMovieDomain = await _movieRepository.AddAsync(movieDomain);
 			var createdMovieDto = _mapper.Map<MovieDetailDto>(createdMovieDomain);
@@ -166,11 +167,17 @@ namespace NetFilm.Infrastructure.Services
 			await IsExsited(id);
 			var movieDomain = _mapper.Map<Movie>(addMovieRequestDto);
 			List<MovieCategory> movieCate = new List<MovieCategory>();
-			foreach (var category in addMovieRequestDto.CategoryIds)
+			foreach (var category in addMovieRequestDto.CategoryIds.Split(","))
 			{
-				movieCate.Add(new MovieCategory { CategoryId = category, MovieId = id });
+				movieCate.Add(new MovieCategory { CategoryId = Guid.Parse(category), MovieId = id });
+			}
+			List<MovieParticipant> movieParticipants = new List<MovieParticipant>();
+			foreach (var participant in addMovieRequestDto.ParticipantIds.Split(","))
+			{
+				movieParticipants.Add(new MovieParticipant { ParticipantId = Guid.Parse(participant), MovieId = id });
 			}
 			movieDomain.MovieCategories = movieCate;
+			movieDomain.MovieParticipants = movieParticipants;
 			var updatedMovieDomain = await _movieRepository.UpdateDetails(id, movieDomain);
 			var updatedMovieDto = _mapper.Map<MovieDetailDto>(updatedMovieDomain);
 			return updatedMovieDto;

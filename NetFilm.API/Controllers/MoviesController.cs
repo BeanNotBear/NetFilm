@@ -4,6 +4,7 @@ using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Common;
+using NetFilm.Domain.Entities;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -38,13 +39,20 @@ namespace NetFilm.API.Controllers
 		[HttpPut]
 		[Route("{id:guid}/Add/Details")]
 		[ValidateModel]
-		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromForm] AddMovieRequestDto addMovieRequestDto, string? prefix)
+		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromBody] AddMovieRequestDto addMovieRequestDto, string? prefix)
 		{
 			var movie = await movieService.UpdateMovieAsync(id, addMovieRequestDto);
-			string fileName = addMovieRequestDto.File.FileName;
+			return CreatedAtAction(nameof(GetById), new { id = movie.Id }, movie);
+		}
+
+		[HttpPost]
+		[Route("{id:guid}/Add/Poster")]
+		public async Task<IActionResult> UpdatePoster([FromRoute] Guid id, IFormFile file, string? prefix)
+		{
+			string fileName = file.FileName;
 			string movieUrl = string.IsNullOrEmpty(prefix) ? fileName : $"{prefix}/{fileName}";
 			var movieThumbnail = await movieService.UpdateThumbnailAsync(id, movieUrl.CreateUrl());
-			string thumbnail = await awsService.UploadImageAsync(addMovieRequestDto.File, BUCKET_IMAGE, prefix);
+			string thumbnail = await awsService.UploadImageAsync(file, BUCKET_IMAGE, "");
 			return CreatedAtAction(nameof(GetById), new { id = movieThumbnail.Id }, movieThumbnail);
 		}
 

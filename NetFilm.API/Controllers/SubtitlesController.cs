@@ -4,6 +4,7 @@ using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.SubtitleDTOs;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Common;
+using NetFilm.Domain.Entities;
 using NetFilm.Infrastructure.Services;
 
 namespace NetFilm.API.Controllers
@@ -27,18 +28,10 @@ namespace NetFilm.API.Controllers
 		[ValidateModel]
 		public async Task<IActionResult> Upload([FromForm] AddSubtitleRequestDto addSubtitleRequestDto, string? prefix)
 		{
-			if (addSubtitleRequestDto.Files.Count != addSubtitleRequestDto.SubtitleName.Count)
-			{
-				return BadRequest();
-			}
-			List<SubtitleDto> subtitles = new List<SubtitleDto>();
-			var numberOfItems = addSubtitleRequestDto.Files.Count;
-			for (var i = 0; i < numberOfItems; i++)
-			{
-				var url = await awsService.UploadSrtAsync(addSubtitleRequestDto.Files[i], BUCKET_SUBTITLE, prefix);
-				subtitles.Add(await subtitleService.AddSubtitle(addSubtitleRequestDto.SubtitleName[i], url.CreateUrl(), addSubtitleRequestDto.MovieId));
-			}
-			return Ok(subtitles);
+
+			var url = await awsService.UploadSrtAsync(addSubtitleRequestDto.File, BUCKET_SUBTITLE, prefix);
+			var subtitle = await subtitleService.AddSubtitle(addSubtitleRequestDto.SubtitleName, url.CreateUrl(), addSubtitleRequestDto.MovieId);
+			return Ok(subtitle);
 		}
 	}
 }

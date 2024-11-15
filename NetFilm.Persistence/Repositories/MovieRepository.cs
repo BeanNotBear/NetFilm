@@ -55,6 +55,7 @@ namespace NetFilm.Persistence.Repositories
 			existedMovie.Duration = movie.Duration;
 			existedMovie.CountryId = movie.CountryId;
 			existedMovie.MovieCategories = movie.MovieCategories;
+			existedMovie.MovieParticipants = movie.MovieParticipants;
 			existedMovie.Status = Domain.Common.MovieStatus.Active;
 			await _dbContext.SaveChangesAsync();
 			return existedMovie;
