@@ -117,8 +117,9 @@ namespace NetFilm.Infrastructure.Services
 			return pageResultDto;
 		}
 
-		public async Task<PagedResult<MovieDto>> GetMoviePaging(MovieQueryParam queryParam)
+		public async Task<PagedResult<MovieViewerDto>> GetMoviePaging(MovieQueryParam queryParam)
 		{
+			// Define the filter expression
 			Expression<Func<Movie, bool>> filter = x => (
 				(string.IsNullOrWhiteSpace(queryParam.SearchTerm) || x.Name.Contains(queryParam.SearchTerm) || x.Description.Contains(queryParam.SearchTerm)) &&
 				(!queryParam.Status.HasValue || x.Status == queryParam.Status) &&
@@ -126,11 +127,13 @@ namespace NetFilm.Infrastructure.Services
 				(!queryParam.AllowingAge.HasValue || x.Allowing_Age >= queryParam.AllowingAge) &&
 				(!queryParam.AverageStar.HasValue || x.Average_Star >= queryParam.AverageStar) &&
 				(!queryParam.Country.HasValue || x.CountryId == queryParam.Country) &&
-				(!queryParam.Category.HasValue || x.MovieCategories.Select(x => x.CategoryId).ToList().Contains(queryParam.Category.Value)) &&
+				(!queryParam.Category.HasValue || x.MovieCategories.Select(mc => mc.CategoryId).Contains(queryParam.Category.Value)) &&
 				(!queryParam.ReleaseDate.HasValue || x.Release_Date >= queryParam.ReleaseDate) &&
 				(x.IsDelete == false) &&
-				(!queryParam.Participant.HasValue || x.MovieParticipants.Select(x => x.ParticipantId).ToList().Contains(queryParam.Participant.Value))
+				(!queryParam.Participant.HasValue || x.MovieParticipants.Select(mp => mp.ParticipantId).Contains(queryParam.Participant.Value))
 			);
+
+			// Define the ordering function
 			Func<IReadOnlyList<Movie>, IOrderedQueryable<Movie>>? orderBy = null;
 
 			if (!string.IsNullOrWhiteSpace(queryParam.SortBy))
@@ -149,16 +152,25 @@ namespace NetFilm.Infrastructure.Services
 						"averagestar" => queryParam.Ascending
 							? query.OrderBy(x => x.Average_Star)
 							: query.OrderByDescending(x => x.Average_Star),
+						"totalviews" => queryParam.Ascending
+							? query.OrderBy(x => x.TotalViews)
+							: query.OrderByDescending(x => x.TotalViews),
 						"allowingage" => queryParam.Ascending
 							? query.OrderBy(x => x.Allowing_Age)
 							: query.OrderByDescending(x => x.Allowing_Age),
-						_ => query.OrderByDescending(x => x.Release_Date) // default sorting
+						_ => query.OrderByDescending(x => x.Release_Date)
 					};
 				};
 			}
 
-			var pageResultDomain = await _movieRepository.GetPagedResultAsync(filter, orderBy, queryParam.Includes, queryParam.PageIndex, queryParam.PageSize);
-			var pageResultDto = _mapper.Map<PagedResult<MovieDto>>(pageResultDomain);
+			var pageResultDomain = await _movieRepository.GetPagedResultAsync(
+				filter,
+				orderBy,
+				queryParam.Includes,
+				queryParam.PageIndex,
+				queryParam.PageSize);
+
+			var pageResultDto = _mapper.Map<PagedResult<MovieViewerDto>>(pageResultDomain);
 			return pageResultDto;
 		}
 

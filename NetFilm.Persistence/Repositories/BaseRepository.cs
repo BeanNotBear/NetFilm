@@ -101,10 +101,10 @@ namespace NetFilm.Persistence.Repositories
 			}
 
 			// Apply pagination
-			var items = await query
+			var items = query
 				.Skip((pageIndex - 1) * pageSize)
 				.Take(pageSize)
-				.ToListAsync();
+				.ToList();
 
 			return new PagedResult<TEntity>(items, totalItems, pageIndex, pageSize);
 		}
