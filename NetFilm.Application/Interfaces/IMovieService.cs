@@ -19,5 +19,6 @@ namespace NetFilm.Application.Interfaces
 		Task<PagedResult<MovieViewerDto>> GetMoviePaging(MovieQueryParam queryParam);
 		Task<MovieDto> UpdateMovieAsync(Guid id, UpdateMovieRequestDto updateMovieRequestDto);
 		Task<MovieDto> SoftDeleteAsync(Guid id);
+		Task<MovieDto> AddView(Guid id);
 	}
 }

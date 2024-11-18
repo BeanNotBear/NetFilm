@@ -265,5 +265,14 @@ namespace NetFilm.Infrastructure.Services
 			var movieDto = _mapper.Map<MovieDto>(movie);
 			return movieDto;
 		}
+
+		public async Task<MovieDto> AddView(Guid id)
+		{
+			await IsExsited(id);
+			var movie = await _movieRepository.GetByIdAsync(id);
+			++movie.TotalViews;
+			var updatedMovie = await _movieRepository.UpdateAsync(movie);
+			return _mapper.Map<MovieDto>(updatedMovie);
+		}
 	}
 }

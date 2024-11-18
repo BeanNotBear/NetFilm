@@ -32,6 +32,7 @@ namespace NetFilm.Persistence.Repositories
 				.ThenInclude(p => p.Participant)
 				.Include(m => m.MovieCategories)
 				.ThenInclude(mc => mc.Category)
+				.Include(m => m.Votes)
 				.FirstOrDefaultAsync(m => m.Id == id);
 			return movie;
 		}

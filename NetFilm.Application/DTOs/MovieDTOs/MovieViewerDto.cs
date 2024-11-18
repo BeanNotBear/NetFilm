@@ -10,5 +10,8 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 	{
 		public Guid Id { get; set; }
 		public string Thumbnail { get; set; }
+		public string Name { get; set; }
+		public DateTime Release_Date { get; set; }
+		public float Average_Star { get; set; }
 	}
 }

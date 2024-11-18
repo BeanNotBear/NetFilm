@@ -30,9 +30,9 @@ namespace NetFilm.API.Controllers
 		[Route("Upload")]
 		public async Task<IActionResult> UploadVideoAsync(IFormFile file, string? prefix)
 		{
-			string movieUrl = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
-			var movie = await movieService.AddMovieAsync(file.FileName, movieUrl);
-			await awsService.UploadVideoAsync(file, BUCKET_MOVIE, prefix);
+			string randomFileName = Guid.NewGuid().ToString();
+			var url = await awsService.UploadVideoAsync(file, BUCKET_MOVIE, prefix, randomFileName);
+			var movie = await movieService.AddMovieAsync(file.FileName, url);
 			return CreatedAtAction(nameof(GetById), new { id = movie.Id }, movie);
 		}
 
@@ -45,14 +45,21 @@ namespace NetFilm.API.Controllers
 			return CreatedAtAction(nameof(GetById), new { id = movie.Id }, movie);
 		}
 
+		[HttpPatch]
+		[Route("{id:guid}/view")]
+		public async Task<IActionResult> AddView([FromRoute] Guid id)
+		{
+			var movie = await movieService.AddView(id);
+			return Ok(movie);
+		}
+
 		[HttpPost]
 		[Route("{id:guid}/Add/Poster")]
 		public async Task<IActionResult> UpdatePoster([FromRoute] Guid id, IFormFile file, string? prefix)
 		{
-			string fileName = file.FileName;
-			string movieUrl = string.IsNullOrEmpty(prefix) ? fileName : $"{prefix}/{fileName}";
-			var movieThumbnail = await movieService.UpdateThumbnailAsync(id, movieUrl.CreateUrl());
-			string thumbnail = await awsService.UploadImageAsync(file, BUCKET_IMAGE, "");
+			string randomFileName = Guid.NewGuid().ToString();
+			string thumbnail = await awsService.UploadImageAsync(file, BUCKET_IMAGE, prefix, randomFileName);
+			var movieThumbnail = await movieService.UpdateThumbnailAsync(id, thumbnail.CreateUrl());
 			return CreatedAtAction(nameof(GetById), new { id = movieThumbnail.Id }, movieThumbnail);
 		}
 
@@ -114,13 +121,14 @@ namespace NetFilm.API.Controllers
 		[Route("{id:guid}")]
 		public async Task<IActionResult> UpdateMovie([FromRoute] Guid id, [FromForm] UpdateMovieRequestDto updateMovieRequestDto)
 		{
+			string randomFileName = Guid.NewGuid().ToString();
 			if (updateMovieRequestDto.Movie != null)
 			{
-				await awsService.UploadVideoAsync(updateMovieRequestDto.Movie, BUCKET_MOVIE, updateMovieRequestDto.PrefixMovie);
+				await awsService.UploadVideoAsync(updateMovieRequestDto.Movie, BUCKET_MOVIE, updateMovieRequestDto.PrefixMovie, randomFileName);
 			}
 			if (updateMovieRequestDto.ThumbnailImage != null)
 			{
-				await awsService.UploadImageAsync(updateMovieRequestDto.ThumbnailImage, BUCKET_IMAGE, updateMovieRequestDto.PrefixThumbnail);
+				await awsService.UploadImageAsync(updateMovieRequestDto.ThumbnailImage, BUCKET_IMAGE, updateMovieRequestDto.PrefixThumbnail, randomFileName);
 			}
 
 			var movie = await movieService.UpdateMovieAsync(id, updateMovieRequestDto);

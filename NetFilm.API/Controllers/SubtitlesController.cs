@@ -28,8 +28,8 @@ namespace NetFilm.API.Controllers
 		[ValidateModel]
 		public async Task<IActionResult> Upload([FromForm] AddSubtitleRequestDto addSubtitleRequestDto, string? prefix)
 		{
-
-			var url = await awsService.UploadSrtAsync(addSubtitleRequestDto.File, BUCKET_SUBTITLE, prefix);
+			var randomFileName = Guid.NewGuid().ToString();
+			var url = await awsService.UploadVttAsync(addSubtitleRequestDto.File, BUCKET_SUBTITLE, prefix, randomFileName);
 			var subtitle = await subtitleService.AddSubtitle(addSubtitleRequestDto.SubtitleName, url.CreateUrl(), addSubtitleRequestDto.MovieId);
 			return Ok(subtitle);
 		}

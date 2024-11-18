@@ -22,5 +22,6 @@ namespace NetFilm.Domain.Entities
 		public ICollection<MovieParticipant> MovieParticipants { get; set; }
 		public ICollection<Comment> Comments { get; set; }
 		public ICollection<Subtitle> Subtitles { get; set; }
-	}
+        public ICollection<Vote> Votes { get; set; }
+    }
 }

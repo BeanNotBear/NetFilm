@@ -26,6 +26,7 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		public DateTime Release_Date { get; set; }
 		public int Duration { get; set; }
 		public int TotalViews { get; set; }
+		public int TotalPeopleVote { get; set; }
 		public CountryDto Country { get; set; }
 		public ICollection<SubtitleDto> Subtitles { get; set; }
         public ICollection<CategoryDto> Categories { get; set; }
