@@ -11,9 +11,7 @@ namespace NetFilm.Domain.Entities
 	public class Comment : BaseEntity<Guid>
 	{
         public string Content { get; set; }
-
-        [Column(TypeName = "Date")]
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
         public Guid MovieId { get; set; }
 
         [Column("ReplyId")]

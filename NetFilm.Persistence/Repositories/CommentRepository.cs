@@ -21,12 +21,12 @@ namespace NetFilm.Persistence.Repositories
 
         public async Task<IEnumerable<Comment>> GetAllCommentsAsync()
         {
-            return await _context.Comments.Include(c => c.User).Include(c => c.Movie).ToListAsync();
+            return await _context.Comments.Include(c => c.User).Include(c => c.Movie).Where(c => c.IsDelete == false).OrderByDescending(c => c.Date).ToListAsync();
         }
 
         public async Task<IEnumerable<Comment>> GetByIdCommentAsync(Guid commentId)
         {
-            return await _context.Comments.Where(c => c.CommentId == commentId).ToListAsync();
+            return await _context.Comments.Where(c => c.CommentId == commentId && c.IsDelete == false).OrderByDescending(c => c.Date).ToListAsync();
         }
 
 
@@ -37,7 +37,7 @@ namespace NetFilm.Persistence.Repositories
 
         public async Task<IEnumerable<Comment>> GetAllRepliesByCommentIdAsync(Guid id)
         {
-            return await _context.Comments.Include(c => c.User).Include(c => c.Movie).Where(c => c.CommentId == id).ToListAsync();
+            return await _context.Comments.Include(c => c.User).Include(c => c.Movie).Where(c => c.CommentId == id && c.IsDelete == false).OrderByDescending(c => c.Date).ToListAsync();
         }
 
         public async Task<Comment> ReplyCommentAsync(Comment reply)
@@ -57,7 +57,53 @@ namespace NetFilm.Persistence.Repositories
 
         public async Task<IEnumerable<Comment>> GetAllCommentsByMovieIdAsync(Guid movieId)
         {
-            return await _context.Comments.Include(c => c.User).Include(c => c.Movie).Where(c => c.CommentId == null && c.MovieId == movieId).ToListAsync();
+            return await _context.Comments.Include(c => c.User).Include(c => c.Movie).Where(c => c.CommentId == null && c.MovieId == movieId && c.IsDelete == false).OrderByDescending(c => c.Date).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Comment>> GetCommentPagedResultAsync(int pageSize, int pageIndex, string searchTerm, string sortBy, bool ascending)
+        {
+
+            // Start with all users as IQueryable
+            IQueryable<Comment> query = _context.Comments.Where(c => c.IsDelete == false).Include(c => c.User).Include(c => c.Movie).AsQueryable();
+
+            // Apply search filters if searchTerm is provided
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var search = searchTerm.Trim().ToLower();
+                query = query.Where(u =>
+                    u.Content.ToLower().Contains(searchTerm)
+                    || u.User.LastName.ToLower().Contains(searchTerm)
+                    || u.Movie.Name.ToLower().Contains(searchTerm)
+                    || u.Date.ToString().ToLower().Contains(searchTerm)
+                );
+            }
+
+            // Apply sorting
+            query = sortBy?.ToLower() switch
+            {
+                "content" => ascending
+                    ? query.OrderBy(u => u.Content)
+                    : query.OrderByDescending(u => u.Content),
+                "username" => ascending
+                ? query.OrderBy(u => u.User.UserName)
+                : query.OrderByDescending(u => u.User.UserName),
+                "movie" => ascending
+                ? query.OrderBy(u => u.Movie.Name)
+                : query.OrderByDescending(u => u.Movie.Name),
+                "date" => ascending
+                    ? query.OrderBy(u => u.Date)
+                    : query.OrderByDescending(u => u.Date),
+                _ => query.OrderByDescending(u => u.Date) // default sorting
+            };
+
+            // Apply pagination
+            var comments = await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+
+            return comments;
         }
     }
 }

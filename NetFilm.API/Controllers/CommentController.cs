@@ -4,6 +4,7 @@ using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.CategoryDtos;
 using NetFilm.Application.DTOs.CommentDTOs;
 using NetFilm.Application.Interfaces;
+using NetFilm.Infrastructure.Services;
 
 namespace NetFilm.API.Controllers
 {
@@ -48,7 +49,7 @@ namespace NetFilm.API.Controllers
             return Ok(comment);
         }
 
-        [HttpDelete("{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> SoftDelete(Guid id)
         {
             var comment = await _commentService.SoftDelete(id);
@@ -75,6 +76,13 @@ namespace NetFilm.API.Controllers
         {
             var comments = await _commentService.GetCommentByMovieId(movieId);
             return Ok(comments);
+        }
+
+        [HttpGet("PageResult")]
+        public async Task<IActionResult> GetCategoryPageResult([FromQuery] CommentQueryParams commentQueryParams)
+        {
+            var categories = await _commentService.GetCommentPagedResult(commentQueryParams);
+            return Ok(categories);
         }
     }
 }

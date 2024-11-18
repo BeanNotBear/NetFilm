@@ -4,8 +4,10 @@ using NetFilm.Application.DTOs.CommentDTOs;
 using NetFilm.Application.DTOs.MovieCategoryDtos;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Common;
 using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
+using NetFilm.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +30,7 @@ namespace NetFilm.Infrastructure.Services
         {
             var comment = _mapper.Map<Comment>(addCommentDto);
             comment.Id = Guid.NewGuid();
-            comment.Date = DateOnly.FromDateTime(DateTime.Now);
+            comment.Date = DateTime.Now;
             await _commentRepository.AddAsync(comment);
             return _mapper.Map<CommentDto>(await _commentRepository.GetCommentByIdAsync(comment.Id));
         }
@@ -89,7 +91,7 @@ namespace NetFilm.Infrastructure.Services
             {
                 Id = new Guid(),
                 Content = reply.Content,
-                Date = DateOnly.FromDateTime(DateTime.Now),
+                Date = DateTime.Now,
                 CommentId = reply.CommentId,
                 MovieId = commentExisted.MovieId,
                 UserId = reply.UserId,
@@ -106,7 +108,7 @@ namespace NetFilm.Infrastructure.Services
                 throw new NotFoundException($"Can not found comment with Id {id}");
             }
             await _commentRepository.SoftDeleteAsync(id);
-            return _mapper.Map<CommentDto>(_commentRepository.GetCommentByIdAsync(id));
+            return _mapper.Map<CommentDto>(await _commentRepository.GetCommentByIdAsync(id));
         }
 
         public async Task<CommentDto> Update(Guid id, UpdateCommentDto updateCommentDto)
@@ -123,6 +125,16 @@ namespace NetFilm.Infrastructure.Services
                 throw new Exception("Some things went wrong!");
             }
             return _mapper.Map<CommentDto>(await _commentRepository.GetCommentByIdAsync(id));
+        }
+        public async Task<PagedResult<CommentDto>> GetCommentPagedResult(CommentQueryParams queryParams)
+        {
+            // Validate
+            queryParams.Validate();
+
+            var comments = await _commentRepository.GetCommentPagedResultAsync(queryParams.PageSize, queryParams.PageIndex, queryParams.SearchTerm, queryParams.SortBy, queryParams.Ascending);
+            var commentsDto = _mapper.Map<IEnumerable<CommentDto>>(comments);
+            var totalItem = await _commentRepository.CountAsync();
+            return new PagedResult<CommentDto>(commentsDto, totalItem, queryParams.PageIndex, queryParams.PageSize);
         }
     }
 }

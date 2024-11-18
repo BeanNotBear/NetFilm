@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.CategoryDtos;
+using NetFilm.Application.DTOs.UserDTOs;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Entities;
+using NetFilm.Infrastructure.Services;
 
 namespace NetFilm.API.Controllers
 {
@@ -53,6 +55,13 @@ namespace NetFilm.API.Controllers
         {
             await _categoryService.HardDelete(id);
             return NoContent();
+        }
+
+        [HttpGet("PageResult")]
+        public async Task<IActionResult> GetCategoryPageResult([FromQuery] CategoryQueryParams categoryQueryParams)
+        {
+            var categories = await _categoryService.GetCategoryPagedResult(categoryQueryParams);
+            return Ok(categories);
         }
     }
 }
