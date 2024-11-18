@@ -73,8 +73,10 @@ namespace NetFilm.Infrastructure.Services
                 throw new NotFoundException("Can't found token");
             }
 
-            var callbackUrl = $"https://localhost:9999/resetpassword?token={token}&email={user.Email}";
+            //var callbackUrl = $"https://localhost:9999/resetpassword?token={token}&email={user.Email}";
+            var callbackUrl = $"http://localhost:4200/reset-password?token={token}&email={user.Email}";
             //send email
+            emailService.SendEmail(user.Email, "Reset Password", callbackUrl);
 
             return new ResponseForgotPasswordDto
             {

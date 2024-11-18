@@ -53,6 +53,14 @@ namespace NetFilm.API.Controllers
         }
 
         [HttpGet]
+        [Route("Email")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var userDto = await userService.GetByEmail(email);
+            return Ok(userDto);
+        }
+
+        [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
         [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetAllUser()

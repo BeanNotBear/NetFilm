@@ -27,6 +27,8 @@ namespace NetFilm.Persistence.Repositories
             // Create claims 
             var claims = new List<Claim>();
 
+            claims.Add(new Claim("id", user.Id.ToString()));
+
             claims.Add(new Claim("email", user.Email));
 
             foreach (var role in roles)
