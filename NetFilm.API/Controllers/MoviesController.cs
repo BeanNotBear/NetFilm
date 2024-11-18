@@ -131,7 +131,7 @@ namespace NetFilm.API.Controllers
 		// update movie video
 		[HttpPatch]
 		[Route("{id:guid}/upload/video")]
-		public async Task<IActionResult> UpdateVideo([FromRoute] Guid id, IFormFile file, int duration,string? prefix)
+		public async Task<IActionResult> UpdateVideo([FromRoute] Guid id, IFormFile file, int duration, string? prefix)
 		{
 			string randomFileName = Guid.NewGuid().ToString();
 			if (file != null)
@@ -154,9 +154,34 @@ namespace NetFilm.API.Controllers
 		[Route("{id:guid}/update/information")]
 		public async Task<IActionResult> UpdateInformation([FromRoute] Guid id, [FromBody] UpdateMovieRequestDto updateMovieRequestDto)
 		{
-			
+
 			var movie = await movieService.UpdateMovieInformation(id, updateMovieRequestDto);
 			return Ok(movie);
+		}
+
+		[HttpPatch]
+		[Route("{id:guid}/update/poster")]
+		//[Authorize(AuthenticationSchemes = "Bearer")]
+		//[Authorize(Roles = "ADMIN")]
+		public async Task<IActionResult> UpdateNewPoster([FromRoute] Guid id, IFormFile file, string? prefix)
+		{
+
+			if (file != null)
+			{
+				var randomFileName = Guid.NewGuid().ToString();
+				var movie = await movieService.GetByIdAsync(id);
+				var url = movie.Thumbnail;
+				if(!string.IsNullOrWhiteSpace(url))
+				{
+					var uri = new Uri(url);
+					var objectKey = uri.AbsolutePath.TrimStart('/');
+					await awsService.DeleteFileAsync(BUCKET_IMAGE, objectKey);
+				}
+				var poster = await awsService.UploadImageAsync(file, BUCKET_IMAGE, prefix, randomFileName);
+				var updatedMovie = await movieService.UpdateThumbnailAsync(id, poster.CreateUrl());
+				return Ok(updatedMovie);
+			}
+			return BadRequest();
 		}
 	}
 }
