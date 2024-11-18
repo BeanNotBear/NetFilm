@@ -103,6 +103,22 @@ namespace NetFilm.Infrastructure.Services
             return userDtos;
         }
 
+        public async Task<UserDto> GetByEmail(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email.ToString());
+
+            if (user == null)
+            {
+                throw new NotFoundException($"User with Email {email} not found.");
+            }
+
+            var userDto = mapper.Map<UserDto>(user);
+            IList<string> list = await userManager.GetRolesAsync(user).ConfigureAwait(false);
+            userDto.Roles = list.ToArray();
+
+            return userDto;
+        }
+
         public async Task<UserDto> GetById(Guid id)
         {
             var user = await userManager.FindByIdAsync(id.ToString());

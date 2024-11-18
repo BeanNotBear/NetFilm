@@ -16,5 +16,6 @@ namespace NetFilm.Application.Interfaces
         Task<UserDto> Add(AddUserRequestDto addUserRequestDto);
         Task<UserDto> Update(Guid id, UpdateUserRequestDto updateUserRequestDto);
         Task<UserDto> UpdatePassword(Guid id, PasswordUpdateParam passwordUpdateParam);
+        Task<UserDto> GetByEmail(string email);
     }
 }

@@ -58,12 +58,12 @@ namespace NetFilm.API.Controllers
 
         [HttpPost]
         [Route("EmailVerification")]
-        public async Task<IActionResult> EmailVerification(string email, string code)
+        public async Task<IActionResult> EmailVerification([FromBody] VerifyEmailDto verifyEmailDto)
         {
-            var result = await authService.EmailVerification(email, code);
+            var result = await authService.EmailVerification(verifyEmailDto);
             if (result)
             {
-                return Ok("Email confirmed");
+                return Ok(result);
             }
             return BadRequest("Email can't confirmed");
         }
@@ -83,9 +83,21 @@ namespace NetFilm.API.Controllers
             var result = await authService.ResetPassword(resetPasswordRequestDto);
             if (result)
             {
-                return Ok("Reset Password Succesfully");
+                return Ok(result);
             }
             return BadRequest("Reset Password Failed");
+        }
+
+        [HttpPost]
+        [Route("ResendEmail")]
+        public async Task<IActionResult> ResendEmail([FromBody] ResendEmailDto resendEmailDto)
+        {
+            var result = await authService.ResendEmail(resendEmailDto);
+            if (result)
+            {
+                return Ok(result);
+            }
+            return BadRequest("Resend Email Failed");
         }
     }
 }

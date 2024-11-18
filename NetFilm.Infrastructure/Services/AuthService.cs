@@ -35,20 +35,20 @@ namespace NetFilm.Infrastructure.Services
             this.emailService = emailService;
         }
 
-        public async Task<bool> EmailVerification(string email, string code)
+        public async Task<bool> EmailVerification(VerifyEmailDto verifyEmailDto)
         {
-            if(code == null && email == null)
+            if(verifyEmailDto.code == null && verifyEmailDto.email == null)
             {
                 throw new NotFoundException("Couldn't find code");
             }
 
-            var user = await userManager.FindByEmailAsync(email);
+            var user = await userManager.FindByEmailAsync(verifyEmailDto.email);
             if(user == null)
             {
                 throw new NotFoundException("Couldn't find email");
             }
 
-            var isVerified = await userManager.ConfirmEmailAsync(user, code);
+            var isVerified = await userManager.ConfirmEmailAsync(user, verifyEmailDto.code);
 
             if (isVerified.Succeeded)
             {
@@ -73,8 +73,10 @@ namespace NetFilm.Infrastructure.Services
                 throw new NotFoundException("Can't found token");
             }
 
-            var callbackUrl = $"https://localhost:9999/resetpassword?token={token}&email={user.Email}";
+            //var callbackUrl = $"https://localhost:9999/resetpassword?token={token}&email={user.Email}";
+            var callbackUrl = $"http://localhost:4200/reset-password?token={token}&email={user.Email}";
             //send email
+            emailService.SendEmail(user.Email, "Reset Password", callbackUrl);
 
             return new ResponseForgotPasswordDto
             {
@@ -162,6 +164,24 @@ namespace NetFilm.Infrastructure.Services
             userDto.Roles = userRoles.ToArray();
 
             return userDto;
+        }
+
+        public async Task<bool> ResendEmail(ResendEmailDto resendEmailDto)
+        {
+            // Check if user exists
+            var existingUser = await userManager.FindByEmailAsync(resendEmailDto.email);
+            if (existingUser == null)
+            {
+                return false;
+            }
+
+            // Require email confirmation
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(existingUser);
+
+            // Email functionality to send the code to user
+            emailService.SendEmail(resendEmailDto.email, "OTP", code);
+
+            return true;
         }
 
         public async Task<bool> ResetPassword(ResetPasswordRequestDto resetPasswordRequestDto)
