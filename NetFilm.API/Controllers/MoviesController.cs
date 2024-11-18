@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.Attributes;
 using NetFilm.Application.DTOs.MovieDTOs;
@@ -28,6 +29,8 @@ namespace NetFilm.API.Controllers
 
 		[HttpPost]
 		[Route("Upload")]
+		//[Authorize(AuthenticationSchemes = "Bearer")]
+		//[Authorize(Roles = "ADMIN")]
 		public async Task<IActionResult> UploadVideoAsync(IFormFile file, string? prefix)
 		{
 			string randomFileName = Guid.NewGuid().ToString();
@@ -39,6 +42,8 @@ namespace NetFilm.API.Controllers
 		[HttpPut]
 		[Route("{id:guid}/Add/Details")]
 		[ValidateModel]
+		[Authorize(AuthenticationSchemes = "Bearer")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<IActionResult> AddMovieDetails([FromRoute] Guid id, [FromBody] AddMovieRequestDto addMovieRequestDto, string? prefix)
 		{
 			var movie = await movieService.UpdateMovieAsync(id, addMovieRequestDto);
@@ -55,6 +60,8 @@ namespace NetFilm.API.Controllers
 
 		[HttpPost]
 		[Route("{id:guid}/Add/Poster")]
+		[Authorize(AuthenticationSchemes = "Bearer")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<IActionResult> UpdatePoster([FromRoute] Guid id, IFormFile file, string? prefix)
 		{
 			string randomFileName = Guid.NewGuid().ToString();
@@ -88,6 +95,8 @@ namespace NetFilm.API.Controllers
 
 		[HttpGet]
 		[Route("admin/spec")]
+		[Authorize(AuthenticationSchemes = "Bearer")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<IActionResult> GetPaging([FromQuery] MovieQueryParam movieQueryParam)
 		{
 			var movie = await movieService.GetPaging(movieQueryParam);
@@ -111,28 +120,44 @@ namespace NetFilm.API.Controllers
 
 		[HttpPatch]
 		[Route("{id:guid}")]
+		[Authorize(AuthenticationSchemes = "Bearer")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<IActionResult> SoftDelete([FromRoute] Guid id)
 		{
 			var movie = await movieService.SoftDeleteAsync(id);
 			return Ok(movie);
 		}
 
-		[HttpPut]
-		[Route("{id:guid}")]
-		public async Task<IActionResult> UpdateMovie([FromRoute] Guid id, [FromForm] UpdateMovieRequestDto updateMovieRequestDto)
+		// update movie video
+		[HttpPatch]
+		[Route("{id:guid}/upload/video")]
+		public async Task<IActionResult> UpdateVideo([FromRoute] Guid id, IFormFile file, int duration,string? prefix)
 		{
 			string randomFileName = Guid.NewGuid().ToString();
-			if (updateMovieRequestDto.Movie != null)
+			if (file != null)
 			{
-				await awsService.UploadVideoAsync(updateMovieRequestDto.Movie, BUCKET_MOVIE, updateMovieRequestDto.PrefixMovie, randomFileName);
+				var movie = await movieService.GetByIdAsync(id);
+				movie.Duration = duration;
+				var url = movie.Movie_Url;
+				var uri = new Uri(url);
+				var objectKey = uri.AbsolutePath.TrimStart('/');
+				await awsService.DeleteFileAsync(BUCKET_MOVIE, objectKey);
+				var movieUrl = await awsService.UploadVideoAsync(file, BUCKET_MOVIE, prefix, randomFileName);
+				movie.Movie_Url = movieUrl.CreateUrl();
+				await movieService.UpdateMovieDetails(movie);
 			}
-			if (updateMovieRequestDto.ThumbnailImage != null)
-			{
-				await awsService.UploadImageAsync(updateMovieRequestDto.ThumbnailImage, BUCKET_IMAGE, updateMovieRequestDto.PrefixThumbnail, randomFileName);
-			}
+			return Ok(file);
+		}
 
-			var movie = await movieService.UpdateMovieAsync(id, updateMovieRequestDto);
-			return Ok(movie);
+		// update movie information
+		[HttpPatch]
+		[Route("{id:guid}/update/information")]
+		public async Task<IActionResult> UpdateInformation([FromRoute] Guid id, UpdateMovieRequestDto updateMovieRequestDto)
+		{
+			var movie = await movieService.GetByIdAsync(id);
+
+			await movieService.UpdateMovieDetails(movie);
+			return Ok();
 		}
 	}
 }

@@ -13,5 +13,6 @@ namespace NetFilm.Domain.Interfaces
 		Task<Movie> UpdateDetails(Guid id, Movie movie);
 		Task<Movie> UpddateThumbnail(Guid id, string thumbnail);
 		Task<Movie> SoftDelete(Guid id);
+		Task<Movie> UpdateNewAsync(Guid id, Movie entity);
 	}
 }

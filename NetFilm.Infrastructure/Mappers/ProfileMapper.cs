@@ -62,7 +62,7 @@ namespace NetFilm.Infrastructure.Mappers
 				.ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.MovieCategories.Select(x => x.Category)))
 				.ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
 				.ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.MovieParticipants.Select(x => x.Participant)))
-				.ForMember(dest => dest.TotalPeopleVote, opt => opt.MapFrom(src => src.Votes.Count));
+				.ForMember(dest => dest.TotalPeopleVote, opt => opt.MapFrom(src => src.Votes.Count)).ReverseMap();
 			CreateMap<Movie, MovieViewerDto>();
 			CreateMap<PagedResult<Movie>, PagedResult<MovieViewerDto>>();
 
