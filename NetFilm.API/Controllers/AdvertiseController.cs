@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetFilm.Application.DTOs.AdvertiseDTOs;
+using NetFilm.Application.DTOs.CategoryDtos;
 using NetFilm.Application.DTOs.MovieDTOs;
 using NetFilm.Application.Interfaces;
 using NetFilm.Infrastructure.Services;
@@ -67,6 +68,13 @@ namespace NetFilm.API.Controllers
         {
             await _advertiseService.HardDelete(id);
             return NoContent();
+        }
+
+        [HttpGet("PageResult")]
+        public async Task<IActionResult> GetAdvertisePageResult([FromQuery] AdvertiseQueryParams advertiseQueryParams)
+        {
+            var categories = await _advertiseService.GetAdvertisePagedResult(advertiseQueryParams);
+            return Ok(categories);
         }
     }
 }

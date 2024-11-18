@@ -53,8 +53,8 @@ namespace NetFilm.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetAllUser()
         {
             return Ok(await userService.GetAll());
@@ -80,8 +80,8 @@ namespace NetFilm.API.Controllers
 
         [HttpGet]
         [Route("PageResult")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetUserPageResult([FromQuery] UserQueryParams userQueryParams)
         {
             try

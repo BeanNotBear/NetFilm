@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using NetFilm.Application.DTOs.AdvertiseDTOs;
+using NetFilm.Application.DTOs.CommentDTOs;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Common;
 using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
+using NetFilm.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,6 +80,17 @@ namespace NetFilm.Infrastructure.Services
             }
             await _advertiseRepository.UpdateAsync(advertise);
             return _mapper.Map<AdvertiseDto>(await _advertiseRepository.GetAdvertiseByIdAsync(advertise.Id));
+        }
+
+        public async Task<PagedResult<AdvertiseDto>> GetAdvertisePagedResult(AdvertiseQueryParams queryParams)
+        {
+            // Validate
+            queryParams.Validate();
+
+            var advertises = await _advertiseRepository.GetAdvertisePagedResultAsync(queryParams.PageSize, queryParams.PageIndex, queryParams.SearchTerm, queryParams.SortBy, queryParams.Ascending);
+            var advertisesDto = _mapper.Map<IEnumerable<AdvertiseDto>>(advertises);
+            var totalItem = await _advertiseRepository.CountAsync();
+            return new PagedResult<AdvertiseDto>(advertisesDto, totalItem, queryParams.PageIndex, queryParams.PageSize);
         }
     }
 }

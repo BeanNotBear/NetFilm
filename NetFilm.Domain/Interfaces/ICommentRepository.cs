@@ -16,5 +16,6 @@ namespace NetFilm.Domain.Interfaces
         Task<Comment> ReplyCommentAsync(Comment reply);
         Task<Comment> SoftDeleteAsync(Guid id);
 		Task<IEnumerable<Comment>> GetAllRepliesByCommentIdAsync(Guid id);
+        Task<IEnumerable<Comment>> GetCommentPagedResultAsync(int pageSize, int pageIndex, string searchTerm, string sortBy, bool ascending);
     }
 }
