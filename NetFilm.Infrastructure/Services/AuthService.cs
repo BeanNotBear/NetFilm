@@ -76,7 +76,7 @@ namespace NetFilm.Infrastructure.Services
             //var callbackUrl = $"https://localhost:9999/resetpassword?token={token}&email={user.Email}";
             var callbackUrl = $"http://localhost:4200/reset-password?token={token}&email={user.Email}";
             //send email
-            emailService.SendEmail(user.Email, "Reset Password", callbackUrl);
+            emailService.SendEmailPassword(user.Email, "Reset Password", callbackUrl);
 
             return new ResponseForgotPasswordDto
             {
@@ -153,7 +153,7 @@ namespace NetFilm.Infrastructure.Services
                 var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
                 // Email functionality to send the code to user
-                emailService.SendEmail(user.Email,"OTP",code);
+                emailService.SendEmailOtp(user.Email,"OTP",code);
             }
 
             // Map to UserDto
@@ -179,7 +179,7 @@ namespace NetFilm.Infrastructure.Services
             var code = await userManager.GenerateEmailConfirmationTokenAsync(existingUser);
 
             // Email functionality to send the code to user
-            emailService.SendEmail(resendEmailDto.email, "OTP", code);
+            emailService.SendEmailOtp(resendEmailDto.email, "OTP", code);
 
             return true;
         }
