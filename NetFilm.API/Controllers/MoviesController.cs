@@ -152,12 +152,11 @@ namespace NetFilm.API.Controllers
 		// update movie information
 		[HttpPatch]
 		[Route("{id:guid}/update/information")]
-		public async Task<IActionResult> UpdateInformation([FromRoute] Guid id, UpdateMovieRequestDto updateMovieRequestDto)
+		public async Task<IActionResult> UpdateInformation([FromRoute] Guid id, [FromBody] UpdateMovieRequestDto updateMovieRequestDto)
 		{
-			var movie = await movieService.GetByIdAsync(id);
-
-			await movieService.UpdateMovieDetails(movie);
-			return Ok();
+			
+			var movie = await movieService.UpdateMovieInformation(id, updateMovieRequestDto);
+			return Ok(movie);
 		}
 	}
 }

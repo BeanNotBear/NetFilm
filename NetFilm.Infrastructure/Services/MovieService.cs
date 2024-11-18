@@ -237,5 +237,42 @@ namespace NetFilm.Infrastructure.Services
 			await _movieRepository.UpdateNewAsync(movie.Id, movieDomain);
 			return movie;
 		}
+
+		public async Task<MovieDetailDto> UpdateMovieInformation(Guid id, UpdateMovieRequestDto updateMovieRequestDto)
+		{
+			await IsExsited(id);
+			var movie = await _movieRepository.GetByIdAsync(id);
+			movie.Name = updateMovieRequestDto.Name != null ? updateMovieRequestDto.Name : movie.Name;
+			movie.Description = updateMovieRequestDto.Description != null ? updateMovieRequestDto.Description : movie.Description;
+			movie.Status = updateMovieRequestDto.Status.HasValue ? updateMovieRequestDto.Status.Value : movie.Status;
+			movie.Quality = updateMovieRequestDto.Quality.HasValue ? updateMovieRequestDto.Quality.Value : movie.Quality;
+			movie.Allowing_Age = updateMovieRequestDto.Allowing_Age.HasValue ? updateMovieRequestDto.Allowing_Age.Value : movie.Allowing_Age;
+			movie.Release_Date = updateMovieRequestDto.Release_Date.HasValue ? updateMovieRequestDto.Release_Date.Value : movie.Release_Date;
+			movie.CountryId = updateMovieRequestDto.CountryId.HasValue ? updateMovieRequestDto.CountryId.Value : movie.CountryId;
+			movie.IsDelete = updateMovieRequestDto.IsDelete.HasValue ? updateMovieRequestDto.IsDelete.Value : movie.IsDelete;
+			List<MovieCategory> movieCate = new List<MovieCategory>();
+			if (!string.IsNullOrWhiteSpace(updateMovieRequestDto.CategoryIds))
+			{
+				foreach (var category in updateMovieRequestDto.CategoryIds.Split(","))
+				{
+					movieCate.Add(new MovieCategory { CategoryId = Guid.Parse(category), MovieId = id });
+				}
+			}
+
+			List<MovieParticipant> movieParticipants = new List<MovieParticipant>();
+			if (!string.IsNullOrWhiteSpace(updateMovieRequestDto.ParticipantIds))
+			{
+				foreach (var participant in updateMovieRequestDto.ParticipantIds.Split(","))
+				{
+					movieParticipants.Add(new MovieParticipant { ParticipantId = Guid.Parse(participant), MovieId = id });
+				}
+			}
+
+			movie.MovieCategories = movieCate;
+			movie.MovieParticipants = movieParticipants;
+			await _movieRepository.UpdateNewAsync(id, movie);
+
+			return _mapper.Map<MovieDetailDto>(movie);
+		}
 	}
 }

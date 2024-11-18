@@ -20,5 +20,6 @@ namespace NetFilm.Application.Interfaces
 		Task<MovieDto> SoftDeleteAsync(Guid id);
 		Task<MovieDto> AddView(Guid id);
 		Task<MovieDetailDto> UpdateMovieDetails(MovieDetailDto movie);
+		Task<MovieDetailDto> UpdateMovieInformation(Guid id, UpdateMovieRequestDto updateMovieRequestDto);
 	}
 }

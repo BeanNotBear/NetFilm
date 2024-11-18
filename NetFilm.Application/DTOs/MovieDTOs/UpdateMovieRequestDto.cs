@@ -13,7 +13,7 @@ namespace NetFilm.Application.DTOs.MovieDTOs
 		public DateTime? Release_Date { get; set; }
 		public Guid? CountryId { get; set; }
         public bool? IsDelete { get; set; }
-        public string CategoryIds { get; set; }
-        public string ParticipantIds { get; set; }
+        public string? CategoryIds { get; set; }
+        public string? ParticipantIds { get; set; }
 	}
 }
