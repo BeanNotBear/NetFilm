@@ -68,7 +68,7 @@ namespace NetFilm.Infrastructure.Mappers
 
 
 			// Mapper for subtitle
-			CreateMap<Subtitle, SubtitleDto>().ReverseMap();
+			CreateMap<Subtitle, SubtitleDto>().ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id)).ReverseMap();
 
 			//Mapper for User
 			// AddUserRequestDto -> User

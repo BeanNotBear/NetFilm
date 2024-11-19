@@ -29,8 +29,8 @@ namespace NetFilm.API.Controllers
 
 		[HttpPost]
 		[Route("Upload")]
-		//[Authorize(AuthenticationSchemes = "Bearer")]
-		//[Authorize(Roles = "ADMIN")]
+		[Authorize(AuthenticationSchemes = "Bearer")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<IActionResult> UploadVideoAsync(IFormFile file, string? prefix)
 		{
 			string randomFileName = Guid.NewGuid().ToString();
@@ -129,9 +129,11 @@ namespace NetFilm.API.Controllers
 		}
 
 		// update movie video
-		[HttpPatch]
+		[HttpPut]
 		[Route("{id:guid}/upload/video")]
-		public async Task<IActionResult> UpdateVideo([FromRoute] Guid id, IFormFile file, int duration, string? prefix)
+		[Authorize(AuthenticationSchemes = "Bearer")]
+		[Authorize(Roles = "ADMIN")]
+		public async Task<IActionResult> UpdateVideo([FromRoute] Guid id, IFormFile file, [FromQuery] int duration, string? prefix)
 		{
 			string randomFileName = Guid.NewGuid().ToString();
 			if (file != null)
@@ -152,6 +154,8 @@ namespace NetFilm.API.Controllers
 		// update movie information
 		[HttpPatch]
 		[Route("{id:guid}/update/information")]
+		[Authorize(AuthenticationSchemes = "Bearer")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<IActionResult> UpdateInformation([FromRoute] Guid id, [FromBody] UpdateMovieRequestDto updateMovieRequestDto)
 		{
 
@@ -159,10 +163,10 @@ namespace NetFilm.API.Controllers
 			return Ok(movie);
 		}
 
-		[HttpPatch]
+		[HttpPost]
 		[Route("{id:guid}/update/poster")]
-		//[Authorize(AuthenticationSchemes = "Bearer")]
-		//[Authorize(Roles = "ADMIN")]
+		[Authorize(AuthenticationSchemes = "Bearer")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<IActionResult> UpdateNewPoster([FromRoute] Guid id, IFormFile file, string? prefix)
 		{
 

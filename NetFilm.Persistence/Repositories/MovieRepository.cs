@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetFilm.Domain.Common;
 using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
 using NetFilm.Persistence.Data;
@@ -69,7 +70,7 @@ namespace NetFilm.Persistence.Repositories
 			existedMovie.Description = entity.Description;
 			existedMovie.Quality = entity.Quality;
 			existedMovie.Thumbnail = entity.Thumbnail;
-			existedMovie.Status = entity.Status;
+			existedMovie.Status = MovieStatus.Active;
 			existedMovie.Average_Star = entity.Average_Star;
 			existedMovie.Movie_Url = entity.Movie_Url;
 			existedMovie.Allowing_Age = entity.Allowing_Age;
@@ -77,8 +78,14 @@ namespace NetFilm.Persistence.Repositories
 			existedMovie.Duration = entity.Duration;
 			existedMovie.TotalViews = entity.TotalViews;
 			existedMovie.CountryId = entity.CountryId;
-			existedMovie.MovieCategories = entity.MovieCategories;
-			existedMovie.MovieParticipants = entity.MovieParticipants;
+			if(existedMovie.MovieCategories != entity.MovieCategories)
+			{
+				existedMovie.MovieCategories = entity.MovieCategories;
+			}
+			if(existedMovie.MovieParticipants != entity.MovieParticipants)
+			{
+				existedMovie.MovieParticipants = entity.MovieParticipants;
+			}
 			await _dbContext.SaveChangesAsync();
 			return entity;
 		}
