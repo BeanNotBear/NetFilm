@@ -15,37 +15,46 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        builder => builder.WithOrigins("http://localhost:4200")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Net Film API", Version = "v1" });
-    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = JwtBearerDefaults.AuthenticationScheme
-    });
+	options.SwaggerDoc("v1", new OpenApiInfo { Title = "Net Film API", Version = "v1" });
+	options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+	{
+		Name = "Authorization",
+		In = ParameterLocation.Header,
+		Type = SecuritySchemeType.ApiKey,
+		Scheme = JwtBearerDefaults.AuthenticationScheme
+	});
 
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = JwtBearerDefaults.AuthenticationScheme
-                },
-                Scheme = "Oauth2",
-                Name = JwtBearerDefaults.AuthenticationScheme,
-                In = ParameterLocation.Header
-            },
-            new List<string>()
-        }
-    });
+	options.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
+		{
+			new OpenApiSecurityScheme
+			{
+				Reference = new OpenApiReference
+				{
+					Type = ReferenceType.SecurityScheme,
+					Id = JwtBearerDefaults.AuthenticationScheme
+				},
+				Scheme = "Oauth2",
+				Name = JwtBearerDefaults.AuthenticationScheme,
+				In = ParameterLocation.Header
+			},
+			new List<string>()
+		}
+	});
 });
 
 builder.Services.AddDomainService(builder.Configuration);
@@ -55,23 +64,33 @@ builder.Services.AddPersistenceService(builder.Configuration);
 
 builder.Services.Configure<FormOptions>(x =>
 {
-	x.ValueLengthLimit = int.MaxValue;
-	x.MultipartBodyLengthLimit = 5L * 1024 * 1024 * 1024;
+    x.ValueLengthLimit = int.MaxValue;
+    x.MultipartBodyLengthLimit = 5L * 1024 * 1024 * 1024;
 });
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-	options.Limits.MaxRequestBodySize = 5L * 1024 * 1024 * 1024;
+    options.Limits.MaxRequestBodySize = 5L * 1024 * 1024 * 1024;
 });
 
+
+
 var app = builder.Build();
+
+//  Use CORS
+app.UseCors("AllowAngularApp");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseCors(x => x
+			.AllowAnyOrigin()
+			.AllowAnyMethod()
+			.AllowAnyHeader());
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 

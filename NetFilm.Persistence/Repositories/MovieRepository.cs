@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetFilm.Domain.Common;
 using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
 using NetFilm.Persistence.Data;
@@ -32,6 +33,7 @@ namespace NetFilm.Persistence.Repositories
 				.ThenInclude(p => p.Participant)
 				.Include(m => m.MovieCategories)
 				.ThenInclude(mc => mc.Category)
+				.Include(m => m.Votes)
 				.FirstOrDefaultAsync(m => m.Id == id);
 			return movie;
 		}
@@ -55,9 +57,37 @@ namespace NetFilm.Persistence.Repositories
 			existedMovie.Duration = movie.Duration;
 			existedMovie.CountryId = movie.CountryId;
 			existedMovie.MovieCategories = movie.MovieCategories;
+			existedMovie.MovieParticipants = movie.MovieParticipants;
 			existedMovie.Status = Domain.Common.MovieStatus.Active;
 			await _dbContext.SaveChangesAsync();
 			return existedMovie;
+		}
+
+		public async Task<Movie> UpdateNewAsync(Guid id, Movie entity)
+		{
+			var existedMovie = await _dbContext.Movies.FindAsync(id);
+			existedMovie.Name = entity.Name;
+			existedMovie.Description = entity.Description;
+			existedMovie.Quality = entity.Quality;
+			existedMovie.Thumbnail = entity.Thumbnail;
+			existedMovie.Status = MovieStatus.Active;
+			existedMovie.Average_Star = entity.Average_Star;
+			existedMovie.Movie_Url = entity.Movie_Url;
+			existedMovie.Allowing_Age = entity.Allowing_Age;
+			existedMovie.Release_Date = entity.Release_Date;
+			existedMovie.Duration = entity.Duration;
+			existedMovie.TotalViews = entity.TotalViews;
+			existedMovie.CountryId = entity.CountryId;
+			if(existedMovie.MovieCategories != entity.MovieCategories)
+			{
+				existedMovie.MovieCategories = entity.MovieCategories;
+			}
+			if(existedMovie.MovieParticipants != entity.MovieParticipants)
+			{
+				existedMovie.MovieParticipants = entity.MovieParticipants;
+			}
+			await _dbContext.SaveChangesAsync();
+			return entity;
 		}
 
 		public async Task<Movie> UpddateThumbnail(Guid id, string thumbnail)

@@ -1,5 +1,6 @@
 ﻿using NetFilm.Application.DTOs.CategoryDtos;
 using NetFilm.Application.DTOs.MovieCategoryDtos;
+using NetFilm.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,6 @@ namespace NetFilm.Application.Interfaces
         Task<CategoryDto> Add(ChangeCategoryDto changeCategoryDto);
         Task<CategoryDto> Update(Guid id, ChangeCategoryDto changeCategoryDto);
         Task<bool> HardDelete(Guid id);
-
+        Task<PagedResult<CategoryDto>> GetCategoryPagedResult(CategoryQueryParams queryParams);
     }
 }

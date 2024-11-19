@@ -217,8 +217,8 @@ namespace NetFilm.Persistence.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -272,7 +272,7 @@ namespace NetFilm.Persistence.Data.Migrations
                         .HasColumnType("real")
                         .HasDefaultValue(0f);
 
-                    b.Property<Guid>("CountryId")
+                    b.Property<Guid?>("CountryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
@@ -345,7 +345,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("MovieParticipants", (string)null);
+                    b.ToTable("MovieParticipants");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Participant", b =>
@@ -367,7 +367,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Participants", (string)null);
+                    b.ToTable("Participants");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Subtitle", b =>
@@ -394,7 +394,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("Subtitles", (string)null);
+                    b.ToTable("Subtitles");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.User", b =>
@@ -498,7 +498,7 @@ namespace NetFilm.Persistence.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Votes", (string)null);
+                    b.ToTable("Votes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -571,7 +571,7 @@ namespace NetFilm.Persistence.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("NetFilm.Domain.Entities.Movie", "Movie")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -591,9 +591,7 @@ namespace NetFilm.Persistence.Data.Migrations
                 {
                     b.HasOne("NetFilm.Domain.Entities.Country", "Country")
                         .WithMany()
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CountryId");
 
                     b.Navigation("Country");
                 });
@@ -639,7 +637,7 @@ namespace NetFilm.Persistence.Data.Migrations
             modelBuilder.Entity("NetFilm.Domain.Entities.Subtitle", b =>
                 {
                     b.HasOne("NetFilm.Domain.Entities.Movie", "Movie")
-                        .WithMany()
+                        .WithMany("Subtitles")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -650,7 +648,7 @@ namespace NetFilm.Persistence.Data.Migrations
             modelBuilder.Entity("NetFilm.Domain.Entities.Vote", b =>
                 {
                     b.HasOne("NetFilm.Domain.Entities.Movie", "Movie")
-                        .WithMany()
+                        .WithMany("Votes")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -678,9 +676,15 @@ namespace NetFilm.Persistence.Data.Migrations
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Movie", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("MovieCategories");
 
                     b.Navigation("MovieParticipants");
+
+                    b.Navigation("Subtitles");
+
+                    b.Navigation("Votes");
                 });
 
             modelBuilder.Entity("NetFilm.Domain.Entities.Participant", b =>

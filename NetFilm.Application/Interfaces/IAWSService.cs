@@ -10,9 +10,9 @@ namespace NetFilm.Application.Interfaces
 		Task<string> CreateBucketAsync(string bucketName);
 		Task<IEnumerable<string>> GetAllBucketAsync();
 		Task<bool> DeleteBucketAsync(string bucketName);
-		Task<string> UploadImageAsync(IFormFile file, string bucketName, string? prefix);
-		Task<string> UploadVideoAsync(IFormFile file, string bucketName, string? prefix);
-		Task<string> UploadSrtAsync(IFormFile file, string bucketName, string? prefix);
+		Task<string> UploadImageAsync(IFormFile file, string bucketName, string? prefix, string fileName);
+		Task<string> UploadVideoAsync(IFormFile file, string bucketName, string? prefix, string fileName);
+		Task<string> UploadVttAsync(IFormFile file, string bucketName, string? prefix, string fileName);
 		Task<IEnumerable<S3ObjectDto>> GetAllFilesAsync(string bucketName, string? prefix);
 		Task<S3ObjectDto> GetFileByKeyAsync(string bucketName, string key);
 		Task<bool> DeleteFileAsync(string bucketName, string key);

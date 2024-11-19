@@ -49,7 +49,7 @@ namespace NetFilm.Infrastructure.Services
 			return true;
 		}
 
-		public async Task<string> UploadImageAsync(IFormFile file, string bucketName, string? prefix)
+		public async Task<string> UploadImageAsync(IFormFile file, string bucketName, string? prefix, string fileName)
 		{
 			var fileExtension = Path.GetExtension(file.FileName);
 			List<string> imageExtensions = new List<string>
@@ -67,13 +67,13 @@ namespace NetFilm.Infrastructure.Services
 			};
 			if (imageExtensions.Contains(fileExtension))
 			{
-				string key = await UploadFileAsync(file, bucketName, prefix);
+				string key = await UploadFileAsync(file, bucketName, prefix, fileName);
 				return key;
 			}
 			throw new FileNotAllowException($"File with {fileExtension} is not allowed!");
 		}
 
-		public async Task<string> UploadVideoAsync(IFormFile file, string bucketName, string? prefix)
+		public async Task<string> UploadVideoAsync(IFormFile file, string bucketName, string? prefix, string fileName)
 		{
 			var fileExtension = Path.GetExtension(file.FileName);
 			List<string> videoExtensions = new List<string>
@@ -89,24 +89,24 @@ namespace NetFilm.Infrastructure.Services
 			};
 			if (videoExtensions.Contains(fileExtension))
 			{
-				string key = await UploadFileAsync(file, bucketName, prefix);
+				string key = await UploadFileAsync(file, bucketName, prefix, fileName);
 				return key;
 			}
 			throw new FileNotAllowException($"File with {fileExtension} is not allowed!");
 		}
 
-		public async Task<string> UploadSrtAsync(IFormFile file, string bucketName, string? prefix)
+		public async Task<string> UploadVttAsync(IFormFile file, string bucketName, string? prefix, string fileName)
 		{
 			var fileExtension = Path.GetExtension(file.FileName);
-			if (fileExtension == ".srt")
+			if (fileExtension == ".vtt")
 			{
-				string key = await UploadFileAsync(file, bucketName, prefix);
+				string key = await UploadFileAsync(file, bucketName, prefix, fileName);
 				return key;
 			}
 			throw new FileNotAllowException($"File with {fileExtension} is not allowed!");
 		}
 
-		private async Task<string> UploadFileAsync(IFormFile file, string bucketName, string? prefix)
+		private async Task<string> UploadFileAsync(IFormFile file, string bucketName, string? prefix, string fileName)
 		{
 			var bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(_amazonS3, bucketName);
 			if (!bucketExists)
@@ -115,21 +115,16 @@ namespace NetFilm.Infrastructure.Services
 			}
 
 			var fileExtension = Path.GetExtension(file.FileName);
-
-			var key = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix}/{file.FileName}";
-
+			var key = string.IsNullOrEmpty(prefix) ? fileName : $"{prefix}/{fileName}";
 			var request = new PutObjectRequest
 			{
 				BucketName = bucketName,
-				Key = key,
+				Key = $"{key}{fileExtension}",
 				InputStream = file.OpenReadStream()
 			};
-
 			request.Metadata.Add("Content-Type", file.ContentType);
-
 			await _amazonS3.PutObjectAsync(request);
-
-			return key;
+			return request.Key;
 		}
 
 		public async Task<IEnumerable<S3ObjectDto>> GetAllFilesAsync(string bucketName, string? prefix)

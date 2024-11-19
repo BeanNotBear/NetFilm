@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NetFilm.Application.DTOs.SubtitleDTOs;
+using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
 using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
@@ -27,6 +28,27 @@ namespace NetFilm.Infrastructure.Services
 			};
 			var subtitleDDomain = await subtitleRepository.AddAsync(subtitle);
 			var subtitleDto = mapper.Map<SubtitleDto>(subtitleDDomain);
+			return subtitleDto;
+		}
+
+		public async Task<bool> DeleteSubtitle(Guid id)
+		{
+			var isDeletd = await subtitleRepository.DeleteAsync(id);
+			if(!isDeletd)
+			{
+				throw new NotFoundException("Can not found by id");
+			}
+			return isDeletd;
+		}
+
+		public async Task<SubtitleDto> GetSubtitleById(Guid id)
+		{
+			var subtitles = await subtitleRepository.GetSubtitlebyId(id);
+			if (subtitles == null)
+			{
+				throw new NotFoundException("Can not found");
+			}
+			var subtitleDto = mapper.Map<SubtitleDto>(subtitles);
 			return subtitleDto;
 		}
 	}

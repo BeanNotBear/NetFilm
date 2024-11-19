@@ -11,5 +11,6 @@ namespace NetFilm.Domain.Interfaces
     {
         Task<IEnumerable<Advertise>> GetAllAdvertisesAsync();
         Task<Advertise> GetAdvertiseByIdAsync(Guid id);
+        Task<IEnumerable<Advertise>> GetAdvertisePagedResultAsync(int pageSize, int pageIndex, string searchTerm, string sortBy, bool ascending);
     }
 }

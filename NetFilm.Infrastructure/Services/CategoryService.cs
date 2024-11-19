@@ -4,6 +4,7 @@ using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.DTOs.MovieCategoryDtos;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
+using NetFilm.Domain.Common;
 using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
 using System;
@@ -73,6 +74,11 @@ namespace NetFilm.Infrastructure.Services
             {
                 throw new NotFoundException($"Can not found category with Id {id}");
             }
+            var isExisted = await _categoryRepository.ExistsByNameAsync(changeCategoryDto.Name);
+            if (isExisted)
+            {
+                throw new ExistedEntityException($"{changeCategoryDto.Name} is already existed!");
+            }
             _mapper.Map(changeCategoryDto,category);
             var updateCategory = await _categoryRepository.UpdateAsync(category);
             if (updateCategory == null)
@@ -80,6 +86,17 @@ namespace NetFilm.Infrastructure.Services
                 throw new Exception("Some things went wrong!");
             }
             return _mapper.Map<CategoryDto>(updateCategory);
+        }
+
+        public async Task<PagedResult<CategoryDto>> GetCategoryPagedResult(CategoryQueryParams queryParams)
+        {
+            // Validate
+            queryParams.Validate();
+
+            var categories = await _categoryRepository.GetCategoryPagedResultAsync(queryParams.PageSize, queryParams.PageIndex, queryParams.SearchTerm, queryParams.SortBy, queryParams.Ascending);
+            var categoriesDto = _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            var totalItem = await _categoryRepository.CountAsync();
+            return new PagedResult<CategoryDto>(categoriesDto,totalItem,queryParams.PageIndex,queryParams.PageSize);
         }
     }
 }

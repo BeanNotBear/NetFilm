@@ -53,6 +53,14 @@ namespace NetFilm.API.Controllers
         }
 
         [HttpGet]
+        [Route("Email")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var userDto = await userService.GetByEmail(email);
+            return Ok(userDto);
+        }
+
+        [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
         [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetAllUser()
@@ -80,8 +88,8 @@ namespace NetFilm.API.Controllers
 
         [HttpGet]
         [Route("PageResult")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetUserPageResult([FromQuery] UserQueryParams userQueryParams)
         {
             try
@@ -95,7 +103,7 @@ namespace NetFilm.API.Controllers
         }
 
         [HttpPatch]
-        [Route("{id:Guid}/UpdatePasswrod")]
+        [Route("{id:Guid}/UpdatePassword")]
         public async Task<IActionResult> UpdatePassword([FromRoute] Guid id, [FromBody] PasswordUpdateParam passwordUpdateParam)
         {
             try

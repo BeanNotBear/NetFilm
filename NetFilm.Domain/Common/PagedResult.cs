@@ -31,12 +31,12 @@ namespace NetFilm.Domain.Common
 
 		private int _pageSize;
 		/// <summary>
-		/// Number of items per page (maximum of 25)
+		/// Number of items per page (maximum of 30)
 		/// </summary>
 		public int PageSize
 		{
 			get => _pageSize;
-			private set => _pageSize = Math.Min(value, 25); // Ensure a maximum of 25
+			private set => _pageSize = Math.Min(value, 50); // Ensure a maximum of 25
 		}
 
 		/// <summary>
@@ -61,7 +61,7 @@ namespace NetFilm.Domain.Common
 			Items = items ?? new List<TModel>();
 			TotalItems = totalItems;
 			PageIndex = pageIndex;
-			PageSize = pageSize > 0 ? Math.Min(pageSize, 25) : 25; // Apply max 25 for pageSize
+			PageSize = pageSize > 0 ? Math.Min(pageSize, 50) : 50; // Apply max 25 for pageSize
 		}
 	}
 }

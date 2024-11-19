@@ -43,7 +43,7 @@
 			{
 				DistributionDomain = DISTRIBUTION_DOMAIN_VIDEO;
 			}
-			if (extension == ".srt")
+			if (extension == ".vtt")
 			{
 				DistributionDomain = DISTRIBUTION_DOMAIN_SUBTITLE;
 			}

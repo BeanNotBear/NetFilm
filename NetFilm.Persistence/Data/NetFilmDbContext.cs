@@ -22,8 +22,8 @@ namespace NetFilm.Persistence.Data
 		public DbSet<Comment> Comments { get; set; }
 		public DbSet<Country> Countries { get; set; }
 		public DbSet<Movie> Movies { get; set; }
-        public DbSet<Subtitle> Subtitles { get; set; }
-        public DbSet<MovieCategory> MovieCategories { get; set; }
+		public DbSet<Subtitle> Subtitles { get; set; }
+		public DbSet<MovieCategory> MovieCategories { get; set; }
 		public DbSet<Participant> Participants { get; set; }
 		public DbSet<MovieParticipant> MovieParticipants { get; set; }
 		public DbSet<Vote> Votes { get; set; }
@@ -65,7 +65,28 @@ namespace NetFilm.Persistence.Data
 			modelBuilder.Entity<MovieParticipant>(entity =>
 			{
 				entity.HasKey(x => new { x.ParticipantId, x.MovieId });
-			});
+			});// Composite primary key
+
+			modelBuilder.Entity<MovieParticipant>()
+				.HasOne(mp => mp.Movie)
+				.WithMany(m => m.MovieParticipants)
+				.HasForeignKey(mp => mp.MovieId);
+
+			modelBuilder.Entity<MovieParticipant>()
+				.HasOne(mp => mp.Participant)
+				.WithMany(p => p.MovieParticipants)
+				.HasForeignKey(mp => mp.ParticipantId);
+
+			// Optional: Configure Cascade Delete (if needed)
+			modelBuilder.Entity<MovieParticipant>()
+				.HasOne(mp => mp.Movie)
+				.WithMany(m => m.MovieParticipants)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<MovieParticipant>()
+				.HasOne(mp => mp.Participant)
+				.WithMany(p => p.MovieParticipants)
+				.OnDelete(DeleteBehavior.Cascade);
 
 		}
 	}

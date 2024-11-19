@@ -1,4 +1,7 @@
-﻿using NetFilm.Application.DTOs.CommentDTOs;
+﻿using NetFilm.Application.DTOs.CategoryDtos;
+using NetFilm.Application.DTOs.CommentDTOs;
+using NetFilm.Application.DTOs.MovieCategoryDtos;
+using NetFilm.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +22,6 @@ namespace NetFilm.Application.Interfaces
         Task<IEnumerable<ReplyDto>> GetAllRepliesByCommentId(Guid commentId);
         Task<bool> HardDelete(Guid id);
         Task<CommentDto> SoftDelete(Guid id);
+        Task<PagedResult<CommentDto>> GetCommentPagedResult(CommentQueryParams queryParams);
     }
 }
