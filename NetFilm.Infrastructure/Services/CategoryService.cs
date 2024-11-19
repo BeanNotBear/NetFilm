@@ -74,6 +74,11 @@ namespace NetFilm.Infrastructure.Services
             {
                 throw new NotFoundException($"Can not found category with Id {id}");
             }
+            var isExisted = await _categoryRepository.ExistsByNameAsync(changeCategoryDto.Name);
+            if (isExisted)
+            {
+                throw new ExistedEntityException($"{changeCategoryDto.Name} is already existed!");
+            }
             _mapper.Map(changeCategoryDto,category);
             var updateCategory = await _categoryRepository.UpdateAsync(category);
             if (updateCategory == null)

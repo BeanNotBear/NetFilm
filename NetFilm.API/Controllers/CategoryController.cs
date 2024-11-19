@@ -50,12 +50,12 @@ namespace NetFilm.API.Controllers
             return Ok(category);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> HardDelete(Guid id)
-        {
-            await _categoryService.HardDelete(id);
-            return NoContent();
-        }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> HardDelete(Guid id)
+        //{
+        //    await _categoryService.HardDelete(id);
+        //    return NoContent();
+        //}
 
         [HttpGet("PageResult")]
         public async Task<IActionResult> GetCategoryPageResult([FromQuery] CategoryQueryParams categoryQueryParams)
