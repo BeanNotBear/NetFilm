@@ -63,31 +63,19 @@ namespace NetFilm.Persistence.Repositories
 			return existedMovie;
 		}
 
-		public async Task<Movie> UpdateNewAsync(Guid id, Movie entity)
+		public async Task<Movie> UpdateNewAsync(Movie entity)
 		{
-			var existedMovie = await _dbContext.Movies.FindAsync(id);
-			existedMovie.Name = entity.Name;
-			existedMovie.Description = entity.Description;
-			existedMovie.Quality = entity.Quality;
-			existedMovie.Thumbnail = entity.Thumbnail;
-			existedMovie.Status = MovieStatus.Active;
-			existedMovie.Average_Star = entity.Average_Star;
-			existedMovie.Movie_Url = entity.Movie_Url;
-			existedMovie.Allowing_Age = entity.Allowing_Age;
-			existedMovie.Release_Date = entity.Release_Date;
-			existedMovie.Duration = entity.Duration;
-			existedMovie.TotalViews = entity.TotalViews;
-			existedMovie.CountryId = entity.CountryId;
-			if(existedMovie.MovieCategories != entity.MovieCategories)
-			{
-				existedMovie.MovieCategories = entity.MovieCategories;
-			}
-			if(existedMovie.MovieParticipants != entity.MovieParticipants)
-			{
-				existedMovie.MovieParticipants = entity.MovieParticipants;
-			}
 			await _dbContext.SaveChangesAsync();
 			return entity;
+		}
+
+		public async Task<Movie> UpdateMovie(Movie movie)
+		{
+			var existedMovie = await _dbContext.Movies.FindAsync(movie.Id);
+			existedMovie.Duration = movie.Duration;
+			existedMovie.Movie_Url = movie.Movie_Url;
+			await _dbContext.SaveChangesAsync();
+			return existedMovie;
 		}
 
 		public async Task<Movie> UpddateThumbnail(Guid id, string thumbnail)

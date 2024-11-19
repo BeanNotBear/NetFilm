@@ -148,7 +148,7 @@ namespace NetFilm.API.Controllers
 				movie.Movie_Url = movieUrl.CreateUrl();
 				await movieService.UpdateMovieDetails(movie);
 			}
-			return Ok(file);
+			return Ok();
 		}
 
 		// update movie information

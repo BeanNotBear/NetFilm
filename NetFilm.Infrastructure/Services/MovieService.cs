@@ -98,15 +98,21 @@ namespace NetFilm.Infrastructure.Services
 						"name" => queryParam.Ascending
 							? query.OrderBy(x => x.Name)
 							: query.OrderByDescending(x => x.Name),
-						"releasedate" => queryParam.Ascending
+						"release_date" => queryParam.Ascending
 							? query.OrderBy(x => x.Release_Date)
 							: query.OrderByDescending(x => x.Release_Date),
-						"averagestar" => queryParam.Ascending
+						"average_star" => queryParam.Ascending
 							? query.OrderBy(x => x.Average_Star)
 							: query.OrderByDescending(x => x.Average_Star),
-						"allowingage" => queryParam.Ascending
+						"allowing_age" => queryParam.Ascending
 							? query.OrderBy(x => x.Allowing_Age)
 							: query.OrderByDescending(x => x.Allowing_Age),
+						"totalviews" => queryParam.Ascending
+							? query.OrderBy(x => x.TotalViews)
+							: query.OrderByDescending(x => x.TotalViews),
+						"duration" => queryParam.Ascending
+							? query.OrderBy(x => x.Duration)
+							: query.OrderByDescending(x => x.Duration),
 						_ => query.OrderByDescending(x => x.Release_Date) // default sorting
 					};
 				};
@@ -234,7 +240,7 @@ namespace NetFilm.Infrastructure.Services
 		public async Task<MovieDetailDto> UpdateMovieDetails(MovieDetailDto movie)
 		{
 			var movieDomain = _mapper.Map<Movie>(movie);
-			await _movieRepository.UpdateNewAsync(movie.Id, movieDomain);
+			await _movieRepository.UpdateMovie(movieDomain);
 			return movie;
 		}
 
@@ -244,7 +250,7 @@ namespace NetFilm.Infrastructure.Services
 			var movie = await _movieRepository.GetByIdAsync(id);
 			movie.Name = updateMovieRequestDto.Name != null ? updateMovieRequestDto.Name : movie.Name;
 			movie.Description = updateMovieRequestDto.Description != null ? updateMovieRequestDto.Description : movie.Description;
-			movie.Status = updateMovieRequestDto.Status.HasValue ? updateMovieRequestDto.Status.Value : movie.Status;
+			movie.Status = MovieStatus.Active;
 			movie.Quality = updateMovieRequestDto.Quality.HasValue ? updateMovieRequestDto.Quality.Value : movie.Quality;
 			movie.Allowing_Age = updateMovieRequestDto.Allowing_Age.HasValue ? updateMovieRequestDto.Allowing_Age.Value : movie.Allowing_Age;
 			movie.Release_Date = updateMovieRequestDto.Release_Date.HasValue ? updateMovieRequestDto.Release_Date.Value : movie.Release_Date;
@@ -267,10 +273,11 @@ namespace NetFilm.Infrastructure.Services
 					movieParticipants.Add(new MovieParticipant { ParticipantId = Guid.Parse(participant), MovieId = id });
 				}
 			}
-
+			movie.MovieCategories.Clear();
+			movie.MovieParticipants.Clear();
 			movie.MovieCategories = movieCate;
 			movie.MovieParticipants = movieParticipants;
-			await _movieRepository.UpdateNewAsync(id, movie);
+			await _movieRepository.UpdateNewAsync(movie);
 
 			return _mapper.Map<MovieDetailDto>(movie);
 		}
