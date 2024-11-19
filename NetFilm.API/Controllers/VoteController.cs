@@ -4,6 +4,7 @@ using NetFilm.Application.DTOs.CountryDTOs;
 using NetFilm.Application.Interfaces;
 using static System.Net.Mime.MediaTypeNames;
 using NetFilm.Application.DTOs.VoteDtos;
+using NetFilm.Domain.Entities;
 
 namespace NetFilm.API.Controllers
 {
@@ -52,8 +53,13 @@ namespace NetFilm.API.Controllers
         [ValidateModel]
         public async Task<IActionResult> Add([FromBody] AddVoteRequestDTO addVoteRequestDto)
         {
-            var vote = await voteService.Add(addVoteRequestDto);
-            return CreatedAtAction(nameof(GetById), new { id = vote.UserId }, vote);
+            var result = await voteService.Add(addVoteRequestDto);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+            return CreatedAtAction(nameof(GetById), new { id = result.Data!.UserId }, result.Data);
+
         }
 
         /// <summary>
@@ -61,13 +67,13 @@ namespace NetFilm.API.Controllers
         /// </summary>
         /// <param name="id">id of country</param>
         /// <returns>no content</returns>
-        [HttpDelete]
-        [Route("{id:guid}")]
-        public async Task<IActionResult> HardDelete([FromRoute] Guid id)
-        {
-            await voteService.HardDelete(id);
-            return NoContent();
-        }
+        //[HttpDelete]
+        //[Route("{id:guid}")]
+        //public async Task<IActionResult> HardDelete([FromRoute] Guid id)
+        //{
+        //    await voteService.HardDelete(id);
+        //    return NoContent();
+        //}
 
         /// <summary>
         /// Soft delete a country
@@ -88,13 +94,27 @@ namespace NetFilm.API.Controllers
         /// <param name="id">id of country</param>
         /// <param name="updateCountryRequestDto">new data need update</param>
         /// <returns>country</returns>
-        [HttpPut]
-        [Route("{id:guid}")]
+        [HttpPut]     
         [ValidateModel]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateVoteRequestDTO updateVoteRequestDTO)
+        public async Task<IActionResult> Update( [FromBody] UpdateVoteRequestDTO updateVoteRequestDTO)
         {
-            var vote = await voteService.Update(id, updateVoteRequestDTO);
-            return Ok(vote);
+            var result = await voteService.Update(updateVoteRequestDTO);
+            if (!result.IsSuccess) 
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result);
+        }
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteVote([FromRoute] Guid id)
+        {
+            var result = await voteService.DeleteAsync(id);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+            return NoContent();
         }
     }
 }

@@ -11,5 +11,8 @@ namespace NetFilm.Domain.Interfaces
     {
         Task<bool> ExistsByNameAsync(string name);
         Task<Vote> SoftDeleteAsync(Guid id);
+        Task<Vote?> GetVoteAsync(Guid movieId, Guid userId);
+        Task<int> CountMovie(Guid movieId);
+        Task<bool> CheckExists(Guid moviewId, Guid userId);
     }
 }

@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 namespace NetFilm.Application.DTOs.VoteDtos
 {
     public class AddVoteRequestDTO
-    {[Required]
+    {
+        [Required]
         public Guid MovieId { get; set; }
         public Guid UserId { get; set; }
 

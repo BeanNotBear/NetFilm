@@ -4,6 +4,7 @@ using NetFilm.Application.DTOs.ParticipantDTOs;
 using NetFilm.Application.DTOs.VoteDtos;
 using NetFilm.Application.Exceptions;
 using NetFilm.Application.Interfaces;
+using NetFilm.Application.Model;
 using NetFilm.Domain.Entities;
 using NetFilm.Domain.Interfaces;
 using System;
@@ -18,11 +19,13 @@ namespace NetFilm.Infrastructure.Services
     {
         private readonly IVoteRepository _voteRepository;
         private readonly IMapper _mapper;
+        private readonly IMovieRepository _movieRepository;
 
-        public VoteService(IVoteRepository voteRepository, IMapper mapper)
+        public VoteService(IVoteRepository voteRepository, IMapper mapper, IMovieRepository movieRepository)
         {
             _voteRepository = voteRepository;
             _mapper = mapper;
+            _movieRepository = movieRepository;
         }
 
         /// <summary>
@@ -32,12 +35,38 @@ namespace NetFilm.Infrastructure.Services
         /// <returns>created country</returns>
        
 
-        public async Task<VoteDto> Add(AddVoteRequestDTO addVoteRequestDTO)
+        public async Task<ResultModel<VoteDto>> Add(AddVoteRequestDTO addVoteRequestDTO)
         {
-            var voteDomain = _mapper.Map<Vote>(addVoteRequestDTO);
-            var createdVoteDomain = await _voteRepository.AddAsync(voteDomain);
-            var createdVoteDto = _mapper.Map<VoteDto>(createdVoteDomain);
-            return createdVoteDto;
+            try
+            {
+                if (await _voteRepository.CheckExists(addVoteRequestDTO.MovieId, addVoteRequestDTO.UserId))
+                {
+                    throw new Exception("You have already voted for this movie");
+                }
+                var movie = await _movieRepository.GetByIdAsync(addVoteRequestDTO.MovieId)
+                    ?? throw new NotFoundException($"Cannot find movie with Id: {addVoteRequestDTO.MovieId}");
+                var vote = _mapper.Map<Vote>(addVoteRequestDTO);
+                var countMovie = await _voteRepository.CountMovie(addVoteRequestDTO.MovieId);
+                countMovie += 1;
+                movie.Average_Star = (movie.Average_Star * (countMovie - 1) + addVoteRequestDTO.Star) / countMovie;
+                await _voteRepository.AddAsync(vote);
+                await _movieRepository.UpdateAsync(movie);
+                var voteDto = _mapper.Map<VoteDto>(vote);
+                return new ResultModel<VoteDto>
+                {
+                    Data = voteDto,
+                    IsSuccess = true,
+
+                };
+            }
+            catch (Exception ex) 
+            {
+                return new ResultModel<VoteDto>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message,
+                };
+            }
         }
 
 
@@ -141,21 +170,74 @@ namespace NetFilm.Infrastructure.Services
         /// <param name="updateVoteRequestDto">Update request data</param>
         /// <returns>Updated vote dto</returns>
         /// <exception cref="NotFoundException"></exception>
-        public async Task<VoteDto> Update(Guid id, UpdateVoteRequestDTO updateVoteRequestDto)
+        public async Task<ResultModel<VoteDto>> Update(UpdateVoteRequestDTO updateVoteRequestDto)
         {
-            var voteDomain = await _voteRepository.GetByIdAsync(id);
-            if (voteDomain == null)
+            try
             {
-                throw new NotFoundException($"Cannot find vote with Id: {id}");
+                if (!await _voteRepository.CheckExists(updateVoteRequestDto.MovieId, updateVoteRequestDto.UserId))
+                {
+                    throw new Exception("You have not voted for this movie");
+                }
+                var movie = await _movieRepository.GetByIdAsync(updateVoteRequestDto.MovieId)
+                            ?? throw new Exception("Movie not found");
+
+                var vote = await _voteRepository.GetVoteAsync(updateVoteRequestDto.MovieId, updateVoteRequestDto.UserId)
+                           ?? throw new Exception("Vote not found");
+                var oldVote = vote.Star;
+                var countMovie = await _voteRepository.CountMovie(updateVoteRequestDto.MovieId);
+                vote.Star = updateVoteRequestDto.Star;
+                movie.Average_Star = (movie.Average_Star * countMovie - oldVote + updateVoteRequestDto.Star) / countMovie;
+                await _voteRepository.UpdateAsync(vote);
+                await _movieRepository.UpdateAsync(movie);
+                var voteDto = _mapper.Map<VoteDto>(vote);
+                return new ResultModel<VoteDto>
+                {
+                    Data = voteDto,
+                    IsSuccess = true,
+
+                };
             }
-            voteDomain.Star = updateVoteRequestDto.Star;
-            var updatedVoteDomain = await _voteRepository.UpdateAsync(voteDomain);
-            if (updatedVoteDomain == null)
+            catch (Exception ex)
             {
-                throw new Exception("Something went wrong!");
+                return new ResultModel<VoteDto>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
             }
-            var updatedVoteDto = _mapper.Map<VoteDto>(updatedVoteDomain);
-            return updatedVoteDto;
+        }
+        public async Task<ResultModel<VoteDto>> DeleteAsync(Guid id)
+        {
+            try
+            {
+                var vote = await _voteRepository.GetByIdAsync(id) ?? throw new Exception("Vote not found");
+                var movie = await _movieRepository.GetByIdAsync(vote.MovieId) ?? throw new Exception("Movie not found");
+                var oldVote = vote.Star;
+                await _voteRepository.DeleteAsync(vote.Id);
+                var countMovie = await _voteRepository.CountMovie(vote.MovieId);
+                if (countMovie > 0)
+                {
+                    countMovie -= 1;
+                    movie.Average_Star = (movie.Average_Star * (countMovie + 1) - oldVote) / countMovie;
+                }
+                else
+                {
+                    movie.Average_Star = 0;
+                }
+                await _movieRepository.UpdateAsync(movie);
+                return new ResultModel<VoteDto>
+                {
+                    IsSuccess = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultModel<VoteDto>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }   
         }
 
     }

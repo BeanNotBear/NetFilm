@@ -1,4 +1,5 @@
 ﻿using NetFilm.Application.DTOs.VoteDtos;
+using NetFilm.Application.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,10 @@ namespace NetFilm.Application.Interfaces
     {
         Task<IEnumerable<VoteDto>> GetAll();
         Task<VoteDto> GetById(Guid id);
-        Task<VoteDto> Add(AddVoteRequestDTO addVoteRequestDTO);
+        Task<ResultModel<VoteDto>> Add(AddVoteRequestDTO addVoteRequestDTO);
         Task<bool> HardDelete(Guid id);
         Task<VoteDto> SoftDelete(Guid id);
-        Task<VoteDto> Update(Guid id, UpdateVoteRequestDTO updateVoteRequestDTO);
+        Task<ResultModel<VoteDto>> Update(UpdateVoteRequestDTO updateVoteRequestDto);
+        Task<ResultModel<VoteDto>> DeleteAsync(Guid id);
     }
 }
