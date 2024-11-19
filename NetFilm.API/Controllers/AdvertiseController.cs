@@ -30,7 +30,14 @@ namespace NetFilm.API.Controllers
 			return Ok(advertises);
 		}
 
-		[HttpGet("{id}")]
+        [HttpGet("Random")]
+        public async Task<IActionResult> GetRandomAdvertise()
+        {
+            var advertises = await _advertiseService.GetRandomAdvertise();
+            return Ok(advertises);
+        }
+
+        [HttpGet("{id}")]
 		public async Task<IActionResult> GetAdvertiseById(Guid id)
 		{
 			var advertise = await _advertiseService.GetAdvertiseById(id);
@@ -54,7 +61,7 @@ namespace NetFilm.API.Controllers
 			if (imageFile != null)
 			{
 				string fileName = imageFile.FileName;
-				if (string.IsNullOrEmpty(fileName))
+				if (!string.IsNullOrEmpty(fileName))
 				{
 					imageUrl = await _awsService.UploadImageAsync(imageFile, BUCKET_IMAGE, prefix, randomFileName);
 				}

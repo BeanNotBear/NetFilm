@@ -74,7 +74,7 @@ namespace NetFilm.Infrastructure.Services
                 throw new NotFoundException($"Can not found advertise with Id {id}");
             }
             _mapper.Map(updateAdvertiseDto,advertise);
-            if (!string.IsNullOrEmpty(image))
+            if (!image.Equals("/"))
             {
                 advertise.Image = image;
             }
@@ -91,6 +91,14 @@ namespace NetFilm.Infrastructure.Services
             var advertisesDto = _mapper.Map<IEnumerable<AdvertiseDto>>(advertises);
             var totalItem = await _advertiseRepository.CountAsync();
             return new PagedResult<AdvertiseDto>(advertisesDto, totalItem, queryParams.PageIndex, queryParams.PageSize);
+        }
+
+        public async Task<AdvertiseDto> GetRandomAdvertise()
+        {
+            var advertises = await _advertiseRepository.GetAllAdvertisesAsync();
+            Random random = new Random();
+            int randomNumber = random.Next(advertises.Count());
+            return _mapper.Map<AdvertiseDto>(advertises.ElementAt(randomNumber));
         }
     }
 }
