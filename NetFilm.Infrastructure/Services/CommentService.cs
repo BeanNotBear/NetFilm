@@ -133,7 +133,7 @@ namespace NetFilm.Infrastructure.Services
 
             var comments = await _commentRepository.GetCommentPagedResultAsync(queryParams.PageSize, queryParams.PageIndex, queryParams.SearchTerm, queryParams.SortBy, queryParams.Ascending);
             var commentsDto = _mapper.Map<IEnumerable<CommentDto>>(comments);
-            var totalItem = await _commentRepository.CountAsync();
+            var totalItem = commentsDto.Count();
             return new PagedResult<CommentDto>(commentsDto, totalItem, queryParams.PageIndex, queryParams.PageSize);
         }
     }
